@@ -1,0 +1,29 @@
+import eu.europa.ec.etrustex.web.gradle.BuildConfigTask
+
+plugins {
+    id 'etrustexweb.java-conventions'
+    id 'java-library'
+}
+
+dependencies {
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation 'org.springframework:spring-aspects'
+    implementation 'org.springframework.security:spring-security-core'
+    implementation "org.bouncycastle:bcpkix-jdk18on:${bouncycastleJdk18onVersion}"
+
+    api(project(":etxweb-utils"))
+
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testImplementation(testFixtures(project(':etxweb-utils')))
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+}
+
+tasks.register('buildConfig', BuildConfigTask) {
+    inputFile = "etxweb-rest/src/main/resources/application.yml"
+    featuresEnumOutputDir = "etxweb-common/src/main/java/"
+}
+compileJava.dependsOn buildConfig

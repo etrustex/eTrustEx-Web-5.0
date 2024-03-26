@@ -1,0 +1,21 @@
+@startuml
+
+entity "Channel" as channel {
+  *id: number
+  --
+    Unique Constraint<name and business>
+    *name: text
+    *business: Group (having type BUSINESS)
+  --
+  *active: boolean
+
+}
+entity "Group" as group {
+  *name: text
+  --
+  ...
+}
+
+channel }o--|| group
+
+@enduml

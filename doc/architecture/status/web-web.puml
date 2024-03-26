@@ -1,0 +1,26 @@
+@startuml
+
+partition "User (eTrustEx Web)-User (eTrustEx Web)"
+skinparam activity {
+BackgroundColor<< Status >> royalBlue
+FontColor<< Status >> white
+FontStyle<< Status >> bold
+BackgroundColor<< DB >> grey
+BackgroundColor<< SystemAction >> DarkCyan
+BackgroundColor<< WebAction >> Ivory
+BackgroundColor<< Notification >> Lavender
+}
+skinparam defaultTextAlignment center
+
+(*) --> "Message sent from Web"
+--> "Create record in MESSAGE_USER_STATUS" << DB >>
+--> "Message available for
+user to retrieve"
+--> "DELIVERED" << Status >>
+--> "User reads message from Web"
+--> "Create record in
+    MESSAGE_SUMMARY_
+    USER_STATUS" <<db>>
+--> "READ" << Status >>
+
+@enduml

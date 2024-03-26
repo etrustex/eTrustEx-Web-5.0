@@ -1,0 +1,26 @@
+@startuml
+title  Admin (GROUP_ADMIN in multiple entity) API calls in <font color=blue>blue</font>
+
+autonumber "<b><font color=blue>0</font>"
+
+autonumber stop
+entityAdminInMultipleBusinessAdminRoot -> entityAdminInMultipleBusinessAdminRoot: beforeEnter()
+entityAdminInMultipleBusinessAdminRoot -> currentGroup: changeGroup(firsBusinessIdFound)
+   autonumber resume
+   currentGroup -[#blue]> groupApi: get(groupId)
+   autonumber stop
+   currentGroup -> currentGroup: setGroup()
+   currentGroup o-[#Magenta]// groupChangeTracker : @setGroupAdvice
+   autonumber resume
+   groupChangeTracker -[#blue]> businessConfigurations: fetchCurrentBusinessConfigurations
+   groupChangeTracker -[#blue]> alert: fetch()
+   groupChangeTracker -[#blue]> alertUserStatusStore: fetch()
+   autonumber stop
+
+entityAdminInMultipleBusinessAdminRoot -> BusinessesOverview: BUSINESSES_OVERVIEW
+BusinessesOverview -> GroupList: mounted()
+GroupList -> group: fetchGroups()
+autonumber resume
+group -[#blue]> groupApi: getGroups()
+
+@enduml

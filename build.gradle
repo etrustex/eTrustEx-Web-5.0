@@ -1,0 +1,323 @@
+import groovy.xml.MarkupBuilder
+
+buildscript {
+    ext {
+        targetEnv = project.hasProperty('targetEnv') ? targetEnv : "prod"
+        useProxy = project.hasProperty('useProxy')
+        delegateLoginAccBhs = project.hasProperty('delegateLoginAccBhs')
+
+        contextRoot = targetEnv == 'test' || delegateLoginAccBhs ? '/etrustex/web/' : '/'
+        targetServerContextRoot = (targetEnv == 'prod' || targetEnv == 'test' || delegateLoginAccBhs) ? '/etrustex/web/' : '/'
+        webResourceName = 'etrustex#web'
+
+        if (targetEnv.startsWith('cop-')) {
+            contextRoot = '/etrustex/web-cop/'
+            targetServerContextRoot = '/etrustex/web-cop/'
+            webResourceName = 'etrustexweb'
+        }
+
+        println 'targetEnv: ' + targetEnv
+        println 'delegateLoginAccBhs: ' + delegateLoginAccBhs
+        println 'contextRoot: ' + contextRoot
+        println 'targetServerContextRoot: ' + targetServerContextRoot
+
+        // liquibase properties for generateChangelog task
+        if (project.hasProperty('oracle')) {
+            // Oracle docker image
+            localDBurl = 'jdbc:oracle:thin:@//10.5.0.2:1521/ETX'
+            localDBusername = 'ETRUSTEX'
+            localDBpassword = 'ETXWDEV1'
+            dbChangelogDDLdir = 'src/main/resources/db/changelog/oracle'
+        } else {
+            // MySQL
+            localDBurl = 'jdbc:mysql://localhost/etrustex_web?useLegacyDatetimeCode=false&serverTimezone=UTC'
+            localDBusername = 'root'
+            localDBpassword = 'mysql'
+            dbChangelogDDLdir = 'src/main/resources/db/changelog/mysql'
+        }
+
+
+        etxWebVersion = '4.20.0'
+
+        accessTokenFilterVersion = '3.5.0'
+        apacheCommonsCodecVersion = '1.15'
+        apachePoiVersion = '5.2.3'
+        aptPluginVersion = '0.20'
+        asciidoctorJvmConvertVersion = '3.3.2'
+        autoServiceVersion = '1.0-rc6'
+        awaitilityVersion = '4.2.0'
+        bouncycastleJdk18onVersion = '1.75'
+        commonsIOVersion = '2.12.0'
+        commonsLang3Version = '3.12.0'
+        ecasClientVersion = '8.6.5:jdk8@jar'
+        euloginDesktopVersion = '9.7.1'
+        euloginOidcScriptClientVersion = '1.2.0'
+        findbugsJsr305Version = '3.0.2'
+        gsonVersion = '2.10.1'
+        gradleVersionsPluginVersion = '0.44.0'
+        groovyYamlVersion = '3.0.7'
+        h2driverVersion = '2.1.214'
+        handyUriTemplatesVersion = '2.1.8'
+        hibernateValidatorVersion = '6.2.5.Final' // Latest JDK8 stable. 8 series require JDK 11. https://hibernate.org/validator/releases/8.0/
+        httpclientVersion = '4.5.13'
+        httpclient5FluentVersion = '5.2.1'
+        httpmimeVersion = '4.5.7'
+        jacksonVersion = '2.14.3'
+        jacocoVersion = '0.8.6'
+        jakartaActivationApiVersion = '1.2.1'
+        jakartaXmlBindApiVersion = '3.0.1'
+        javaxActivationVersion = '1.1.1'
+        javaxJmsVersion = '2.0.1'
+        javaxMailVersion = '1.4.7'
+        jaxbApiVersion = '2.3.1'
+        jaxbImplVersion = '2.2.5'
+        jaxbXjcVersion = '2.2.5'
+        jmhVersion = '1.35'
+        jsr305Version = '3.0.2'
+        junitVersion = '5.8.2'
+        licenseGradlePluginVersion = '2.5'
+        liquibaseCoreVersion = '4.22.0'
+        liquibaseHibernateVersion = '5:4.16.1'
+        liquibasePluginVersion = '2.0.1'
+        mysqlConnectorVersion = '8.0.20'
+        nimbusJoseJwtVersion = '9.37.3'
+        oauth2OidcSdkVersion = '11.10.1'
+        // the code base sometime ago was migrated to the Apache commons ognl and this source code is used just to maintenance 3.x branch. The new version from Apache will start from 4.x
+        ognlVersion = '3.3.4'
+        owaspDepCheckVersion = '5.3.0'
+        pdfBoxVersion = '2.0.27'
+        pdfbox2LayoutVersion = '1.0.0'
+        reflectionsVersion = '0.10.2'
+        servletApiVersion = '3.1.0'
+        shedlockVersion = '4.38.0'
+        slf4jVersion = '2.0.3'
+        springBatchTestVersion = '4.3.6'
+        springBootVersion = '2.7.18'
+        springDocOpenApiVersion = '1.6.13'
+        testFixturesSl4jVersion = '1.7.30'
+        testFixturesLogbackClassicVersion = '1.2.11'
+        typescriptGeneratorVersion = '2.37.1128' // v3.x requires Minimal Java version 11
+        validationApiVersion = '2.0.1.Final'
+        xstreamVersion = '1.4.11'
+        cxfVersion = '3.5.5'
+    }
+
+    repositories repos
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.owasp:dependency-check-gradle:${owaspDepCheckVersion}"
+    }
+}
+
+plugins {
+    id 'base'
+    id "com.github.ben-manes.versions" version "$gradleVersionsPluginVersion"
+    id 'com.github.jk1.dependency-license-report' version "${licenseGradlePluginVersion}"
+}
+
+configurations {
+    providedRuntime
+    // At 29/11/18 We don't use any dependency that depends on commons-logging. But as a preventive measure we exclude it
+    all {
+        exclude group: "commons-logging", module: "commons-logging"
+    }
+}
+
+repositories repos
+
+apply plugin: 'project-report'
+
+subprojects {
+    apply plugin: 'project-report'
+
+// TODO Configure in bamboo when vue tests are ready. Update sonarqube_test_exclusions variable
+//    if (name == 'etxweb-vueApp') {
+//        sonarqube {
+//            properties {
+//                property "sonar.sources", ["./src", "./public"]
+//                property "sonar.tests", "./tests"
+//                property "sonar.javascript.lcov.reportPaths", ["./coverage/lcov.info"]
+//            }
+//        }
+    if (name != 'etxweb-vueApp') {
+        tasks.register('allDeps', DependencyReportTask) {}
+
+        apply plugin: 'idea'
+        apply plugin: 'java'
+        apply plugin: 'org.springframework.boot'
+        apply plugin: 'io.spring.dependency-management'
+        apply plugin: 'org.owasp.dependencycheck'
+        apply plugin: 'java-test-fixtures'
+
+        repositories repos
+
+        tasks.withType(Test).configureEach {
+            useJUnitPlatform()
+        }
+
+        buildscript {
+            repositories repos
+        }
+
+        group 'eu.europa.ec.etrustex.web'
+        version = etxWebVersion
+
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+
+        dependencies {
+            compileOnly 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+            annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+        }
+
+        bootJar {
+            enabled = false
+        }
+
+        jar {
+            enabled = true
+        }
+// Uncomment bellow to show full test logs
+//        test {
+//            testLogging.showStandardStreams = true
+//            testLogging.exceptionFormat = 'full'
+//        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+
+        // Workaround for Java 8 compiler bug (enable compilation in a separate daemon process)
+        // java.lang.NoClassDefFoundError: com/sun/tools/javac/util/Log$PrefixKind
+        // https://github.com/rzwitserloot/lombok/issues/1671
+        // https://github.com/nilsmagnus/wsdl2java/issues/28
+        options.fork = true
+    }
+}
+
+//release {
+//    dependencyCheckAggregate.enabled = true
+//    dependencyCheckAnalyze.enabled = true
+//}
+
+
+tasks.register('copyStreamSaverMITM', Copy) {
+    // mitm.html in streamsaver v 2.0.6 is not working on latest FF versions
+//    from file("etxweb-vueApp/node_modules/streamsaver/mitm.html")
+    from file("etxweb-vueApp/node_modules/streamsaver/sw.js")
+    into file("etxweb-vueApp/public/stream-saver/")
+}
+
+
+/*
+ * npm build takes too long if run from gradle.
+ * It is better to edit IntelliJ configuration and add "npm run dev" before launch
+ */
+tasks.register('buildVueApp') {
+    dependsOn copyStreamSaverMITM
+    def npmCommand = System.getProperty("os.name").toUpperCase().contains("WINDOWS") ? "npm.cmd" : "npm"
+    def buildCommand = (targetEnv.startsWith("local") || targetEnv.startsWith("docker")) ? "dev" : "build"
+
+    doLast {
+        exec {
+            workingDir 'etxweb-vueApp'
+            commandLine npmCommand, "version", etxWebVersion, '--allow-same-version'
+        }
+        exec {
+            workingDir 'etxweb-vueApp'
+            commandLine npmCommand, "run", buildCommand
+        }
+    }
+}
+
+tasks.register('globalJavadoc', Javadoc) {
+    destinationDir = file("$buildDir/docs/javadoc")
+    title = "$project.name API"
+    options.author true
+    options.addStringOption 'Xdoclint:none', '-quiet'
+
+    subprojects.each { proj ->
+        proj.tasks.withType(Javadoc).each { javadocTask ->
+            source += javadocTask.source
+            classpath += javadocTask.classpath
+            excludes += javadocTask.excludes
+            excludes += 'javax.interceptor'
+            includes += javadocTask.includes
+        }
+    }
+    doLast {
+        copy {
+            from "$buildDir/docs/javadoc"
+            into "etxweb-rest/src/main/resources/public/javadoc"
+        }
+    }
+}
+
+htmlDependencyReport {
+    projects = project.subprojects
+}
+
+apply plugin: 'org.owasp.dependencycheck'
+dependencyCheck {
+    // heap space bug on the vueApp module
+    skipProjects = [':etxweb-vueApp']
+
+    format = 'ALL'
+    suppressionFile = 'dependencyCheck-suppresions.xml'
+
+    analyzers {
+        assemblyEnabled = false
+        retirejs {
+            enabled = false
+        }
+    }
+
+}
+
+tasks.named("dependencyUpdates").configure {
+    gradleReleaseChannel = 'current'
+    outputFormatter = { result ->
+        def updatable = result.outdated.dependencies
+        if (!updatable.isEmpty()){
+            def filepath = "$buildDir/reports/dependencies-updates.html"
+            def file = new File(filepath)
+
+            if (!file.exists()) {
+                file.getParentFile().mkdirs()
+            }
+
+            def fileWriter = new FileWriter(file)
+            def html = new MarkupBuilder(fileWriter)
+
+            html.html {
+                head {
+                    style("table{width:100%}table,td,th{border:1px solid #4b636e;border-collapse:collapse}td,th{padding:15px;text-align:left}table tr:nth-child(even){background-color:#f5f5f6}table tr:nth-child(odd){background-color:#e1e2e1}table th{background-color:#4b636e;color:#ffffff}")
+                }
+                body {
+                    h3("Dependencies with later versions for $project.name")
+                    h4("Last updated: ${LocalDateTime.now()}")
+                    table {
+                        tr {
+                            th("Group")
+                            th("Module")
+                            th("Current version")
+                            th("Latest version")
+                        }
+                        updatable.each { dependency->
+                            tr {
+                                td(dependency.group)
+                                td(dependency.name)
+                                td(dependency.version)
+                                td(dependency.available.release ?: dependency.available.milestone)
+                            }
+                        }
+                    }
+                }
+            }
+
+            println "[DEPENDENCY REPORTER] Generated file: $filepath"
+        }
+    }
+}

@@ -1,0 +1,62 @@
+# Pull image from https://hub.docker.com/repository/docker/etrustex/weblogic
+# etrustex/weblogic:12.2.1.4-dev has been built from the Oracle WebLogic 12.2.1.4 developer install image
+# Using the Oracle WebLogic Server 12.2.1.4 Quick installer binararies from https://www.oracle.com/middleware/technologies/weblogic-server-downloads.html
+
+
+FROM etrustex/weblogic:12.2.1.4-dev
+
+# WLS Configuration
+# -----------------
+ENV JAVA_HOME="/u01/jdk" \
+    CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" \
+    WL_HOME="/u01/oracle/wlserver" \
+    PRODUCTION_MODE="${CUSTOM_PRODUCTION_MODE_ENABLED:-false}" \
+    CUSTOM_DOMAIN_ROOT="/u01/oracle/user_projects/domains" \
+    CUSTOM_ADMIN_PORT="${CUSTOM_ADMIN_PORT:-7001}" \
+    CUSTOM_DEBUG_PORT="$CUSTOM_DEBUG_PORT:-8453}" \
+    CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-AdminServer}" \
+    CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-AdminContainer}" \
+    CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}" \
+    CUSTOM_MANAGED_SERVER_NAME_BASE="${CUSTOM_MANAGED_SERVER_NAME_BASE:-MS}" \
+    CUSTOM_CONFIGURED_MANAGED_SERVER_COUNT="${CUSTOM_CONFIGURED_MANAGED_SERVER_COUNT:-2}" \
+    CUSTOM_MANAGED_NAME="${CUSTOM_MANAGED_NAME:-MS1}" \
+    CUSTOM_CLUSTER_NAME="${CUSTOM_CLUSTER_NAME:-cluster1}" \
+    CUSTOM_CLUSTER_TYPE="${CUSTOM_CLUSTER_TYPE:-DYNAMIC}" \
+    PROPERTIES_FILE_DIR="/u01/oracle/properties" \
+    CUSTOM_JAVA_OPTIONS="-DUseSunHttpHandler=true -Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=true -Dweblogic.security.SSL.ignoreHostnameVerification=true"  \
+    CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
+
+# Add files required to build this image
+COPY --chown=oracle:oracle weblogic/properties/* /u01/oracle/properties/
+COPY --chown=oracle:oracle weblogic/container-scripts/* /u01/oracle/container-scripts/
+COPY --chown=oracle:oracle weblogic/wlstapi-1.9.1 /u01/oracle/wlstapi-1.9.1/
+COPY --chown=oracle:oracle weblogic/eulogin /u01/eulogin/
+COPY --chown=oracle:oracle weblogic/etx_config /u01/oracle/etx_config
+COPY --chown=oracle:oracle weblogic/credentials-aes-key /u01/oracle/ec/local/appserver/u100/credentials-aes-key
+
+# Import commission certificates into JVM
+RUN keytool -import -noprompt -alias "CommisSign2" -file /u01/eulogin/certificates/CommisSign2.cer -keystore cacerts -storepass changeit && \
+    keytool -import -noprompt -alias "EuropeanCommission2" -file /u01/eulogin/certificates/EuropeanCommission2.cer -keystore cacerts -storepass changeit
+
+
+# Create directory where domain will be written to
+USER root
+
+# Once the base_domain is recreated, the following line can be removed.
+RUN ln -s /usr/java/default/ /u01/jdk
+
+RUN mkdir -p $CUSTOM_DOMAIN_ROOT && \
+    chown -R oracle:oracle $CUSTOM_DOMAIN_ROOT/.. && \
+    chmod -R a+xwr $CUSTOM_DOMAIN_ROOT/.. && \
+    mkdir -p $ORACLE_HOME/properties && \
+    chmod -R a+r $ORACLE_HOME/properties && \
+    chmod +x /u01/oracle/container-scripts/* && \
+    chmod +x /u01/oracle/wlstapi-1.9.1/bin/*
+
+
+VOLUME $CUSTOM_DOMAIN_ROOT
+
+EXPOSE $ADMIN_PORT $MANAGED_SERVER_PORT $DEBUG_PORT
+USER oracle
+WORKDIR $ORACLE_HOME
+CMD ["/u01/oracle/container-scripts/createWLSDomain.sh"]

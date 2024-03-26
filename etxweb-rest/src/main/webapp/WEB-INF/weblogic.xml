@@ -1,0 +1,38 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<weblogic-web-app
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-web-app http://xmlns.oracle.com/weblogic/weblogic-web-app/1.7/weblogic-web-app.xsd"
+        xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
+
+    <weblogic-version>12.2.1.4</weblogic-version>
+
+    <context-root>@target.server.context.root@</context-root>
+
+    <container-descriptor>
+        <prefer-application-packages>
+            <package-name>org.slf4j.*</package-name>
+            <package-name>ch.qos.logback.*</package-name>
+            <package-name>org.springframework.*</package-name>
+            <package-name>org.hibernate.*</package-name>
+            <package-name>javax.validation.*</package-name>
+            <package-name>org.apache.xmlbeans.*</package-name>
+            <package-name>org.apache.commons.*</package-name>
+            <package-name>org.apache.poi.*</package-name>
+            <package-name>com.fasterxml.jackson.*</package-name>
+            <package-name>org.bouncycastle.*</package-name>
+            <package-name>net.minidev.*</package-name>
+            <package-name>com.nimbusds.*</package-name>
+            <package-name>org.openxmlformats.*</package-name>
+            <package-name>schemaorg_apache_xmlbeans.*</package-name>
+        </prefer-application-packages>
+    </container-descriptor>
+
+    <security-role-assignment>
+        <role-name>NODE-SERVICE-ROLE</role-name>
+        <principal-name>NODE-SERVICE-GROUP</principal-name>
+    </security-role-assignment>
+    <security-role-assignment>
+        <role-name>USER-REGISTRATION-SERVICE-ROLE</role-name>
+        <principal-name>USER-REGISTRATION-SERVICE-GROUP</principal-name>
+    </security-role-assignment>
+</weblogic-web-app>

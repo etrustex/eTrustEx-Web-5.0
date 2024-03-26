@@ -1,0 +1,79 @@
+@startuml
+
+entity "Policy" as policy {
+        *action: text
+        *domain_type: text
+        *role_id
+        --
+        *description: text
+        *granting: boolean
+        *created_by: text
+        ...
+    }
+'package "Alternative 1" as a {
+'    entity "Policy" as policy {
+'        *name: text
+'        *action: text
+'        *domain_type: text
+'        *role_id
+'        --
+'        *description: text
+'        *granting: boolean
+'        *created_by: text
+'        ...
+'    }
+'
+'    entity "Role" as role {
+'        *id: text
+'        --
+'        *name: text
+'        *description: text
+'        *created_by: text
+'        ..
+'    }
+'
+'    entity "Group" as group {
+'      *id: text
+'      --
+'      *policy_name: text (identifies the set of policies having this name)
+'      ...
+'
+'    }
+'
+'    role ||--o{policy
+'}
+'
+'package "Alternative 2" as b {
+'
+'    entity "PolicyGroup" as policyGroup_alt {
+'      *name: text
+'      --
+'      *description: text
+'      *created_by: text
+'      ...
+'    }
+'
+'    entity "Policy" as policy_alt {
+'      policyName
+'      *action: text
+'      *domain_type: text
+'      *role_id
+'      --
+'      *granting: boolean
+'      *created_by: text
+'      ...
+'    }
+'
+'    entity "Group" as group_alt {
+'      *id: text
+'      --
+'      *policy_name: text (identifies the set of policies having this name)
+'      ...
+'
+'    }
+'
+'    group_alt }o--o{ policyGroup_alt
+'    policyGroup_alt ||--o{policy_alt
+'}
+
+@enduml

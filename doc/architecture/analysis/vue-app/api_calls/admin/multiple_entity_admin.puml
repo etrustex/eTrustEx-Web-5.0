@@ -1,0 +1,26 @@
+@startuml
+title  Admin (GROUP_ADMIN in multiple entity) API calls in <font color=blue>blue</font>
+
+autonumber "<b><font color=blue>0</font>"
+
+autonumber stop
+multipleEntityAdminRoot -> multipleEntityAdminRoot: beforeEnter()
+multipleEntityAdminRoot -> group: fetchCurrentEntity()
+    autonumber resume
+    group -[#blue]> groupApi: get(groupId)
+    autonumber stop
+multipleEntityAdminRoot -> group: fetchCurrentBusiness()
+    autonumber resume
+    group -[#blue]> groupApi: get(groupId)
+    group -[#blue]> businessConfiguration: fetchCurrentBusinessConfigurations()
+    autonumber stop
+
+
+multipleEntityAdminRoot -> adminBusinessEntitiesRoutes: redirect BUSINESS_ENTITIES_OVERVIEW
+adminBusinessEntitiesRoutes -> GroupList: (Entities import): mounted()
+    GroupList -> group: fetchGroups()
+    autonumber resume
+    group -[#blue]> groupApi: getGroups()
+    autonumber stop
+
+@enduml

@@ -1,0 +1,23 @@
+buildscript {
+    ext {
+        javapoetVersion = '1.13.0'
+        jacksonDataformatYamlVersion = '2.13.4'
+        jacksonVersion = '2.13.4'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'groovy-gradle-plugin'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.squareup:javapoet:${javapoetVersion}"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonDataformatYamlVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+}

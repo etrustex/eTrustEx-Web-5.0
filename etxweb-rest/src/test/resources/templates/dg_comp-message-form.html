@@ -1,0 +1,181 @@
+<div>
+  <div class="form-group row">
+    <span class="col-sm-3 col-form-label"></span>
+    <div class="col-sm-9 text-center">
+      <h3 class="variant helper-vh-heading-spacing">Sender info</h3>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="senderInfo_organisationName" class="col-sm-3 col-form-label">Organisation name: </label>
+    <div class="col-sm-9">
+      <input v-on:focusout="reRender()" type="text" class="form-control test-vi" id="senderInfo_organisationName" v-model="templateVariables.senderInfo_organisationName" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="senderInfo_contactPerson" class="col-sm-3 col-form-label">Contact person*</label>
+    <div class="col-sm-9">
+      <validation-provider rules="required" v-slot="{ errors }">
+        <input id="senderInfo_contactPerson" v-model="templateVariables.senderInfo_contactPerson" type="text" class="form-control">
+        <span class="error">{{ errors[0] }}</span>
+      </validation-provider>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="senderInfo_position" class="col-sm-3 col-form-label">Position</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="senderInfo_position" v-model="templateVariables.senderInfo_position" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="senderInfo_phone" class="col-sm-3 col-form-label">Phone</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="senderInfo_phone" v-model="templateVariables.senderInfo_phone" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="senderInfo_email" class="col-sm-3 col-form-label">Email*</label>
+    <div class="col-sm-9">
+      <validation-provider rules="required|validEmail" v-slot="{ errors }">
+        <input id="senderInfo_email" v-model="templateVariables.senderInfo_email" type="text" class="form-control">
+        <span class="error">{{ errors[0] }}</span>
+      </validation-provider>
+    </div>
+  </div>
+  <div id="sender-info">
+    <div class="form-group row">
+      <label for="senderInfo_address" class="col-sm-3 col-form-label">Address</label>
+      <div class="col-sm-9">
+        <input type="text" class="form-control" id="senderInfo_address" v-model="templateVariables.senderInfo_address" >
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="senderInfo_zip" class="col-sm-3 col-form-label">Zip</label>
+      <div class="col-sm-9">
+        <input type="text" class="form-control" id="senderInfo_zip" v-model="templateVariables.senderInfo_zip" >
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="senderInfo_city" class="col-sm-3 col-form-label">City</label>
+      <div class="col-sm-9">
+        <input type="text" class="form-control" id="senderInfo_city" v-model="templateVariables.senderInfo_city" >
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="senderInfo_country" class="col-sm-3 col-form-label">Country {{templateVariables.senderInfo_organisationName && !templateVariables.senderInfo_organisationName.match(/^\s*$/) ? '*' : ''}}</label>
+      <div class="col-sm-9">
+        <validation-provider :rules="templateVariables.senderInfo_organisationName && !templateVariables.senderInfo_organisationName.match(/^\s*$/) ? 'required' : ''"  v-slot="{ errors }">
+          <input type="text" class="form-control" id="senderInfo_country" v-model="templateVariables.senderInfo_country" >
+          <span class="error">{{ errors[0] }}</span>
+        </validation-provider>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <span class="col-sm-3 col-form-label"></span>
+    <div class="col-sm-9 text-center">
+      <h3 class="variant helper-vh-heading-spacing">On behalf of</h3>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_organisationName" class="col-sm-3 col-form-label">Company Name</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_organisationName" v-model="templateVariables.onBehalfOf_organisationName" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_contactPerson" class="col-sm-3 col-form-label">Contact person</label>
+    <div class="col-sm-9">
+      <input id="onBehalfOf_contactPerson" v-model="templateVariables.onBehalfOf_contactPerson" type="text" class="form-control">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_position" class="col-sm-3 col-form-label">Position</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_position" v-model="templateVariables.onBehalfOf_position" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_phone" class="col-sm-3 col-form-label">Phone</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_phone" v-model="templateVariables.onBehalfOf_phone" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_email" class="col-sm-3 col-form-label">Email</label>
+    <div class="col-sm-9">
+      <validation-provider rules="validEmail" v-slot="{ errors }">
+        <input id="onBehalfOf_email" v-model="templateVariables.onBehalfOf_email" type="text" class="form-control">
+        <span class="error">{{ errors[0] }}</span>
+      </validation-provider>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_address" class="col-sm-3 col-form-label">Address</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_address" v-model="templateVariables.onBehalfOf_address" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_zip" class="col-sm-3 col-form-label">Zip</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_zip" v-model="templateVariables.onBehalfOf_zip" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_city" class="col-sm-3 col-form-label">City</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_city" v-model="templateVariables.onBehalfOf_city" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="onBehalfOf_country" class="col-sm-3 col-form-label">Country</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="onBehalfOf_country" v-model="templateVariables.onBehalfOf_country" >
+    </div>
+  </div>
+  <div class="form-group row">
+    <span class="col-sm-3 col-form-label"></span>
+    <div class="col-sm-9 text-center">
+      <h3 class="variant helper-vh-heading-spacing">Email recipients</h3>
+    </div>
+  </div>
+  <div class="form-group row">
+    <span class="col-sm-3 col-form-label"></span>
+    <div class="col-sm-9">
+      <validation-provider rules="validEmail|validCommissionEmail" v-slot="{ errors }">
+        <textarea rows="2" class="form-control float-right" id="emailRecipients" v-model="templateVariables.emailRecipients" ></textarea>
+        <span class="error">{{ errors[0] }}</span>
+      </validation-provider>
+      <small class="form-text text-muted">You can add email addresses separated by a comma or semicolon and they need to end in @ec.europa.eu</small>
+    </div>
+  </div>
+  <div class="form-group row">
+    <span class="col-sm-3 col-form-label"></span>
+    <div class="col-sm-9 text-center">
+      <h3 class="variant helper-vh-heading-spacing">Message information</h3>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="reference" class="col-sm-3 col-form-label">Case number*</label>
+    <div class="col-sm-9">
+      <validation-provider rules="required" v-slot="{ errors }">
+        <input type="text" class="form-control" id="reference" v-model="templateVariables.reference" >
+        <span class="error">{{ errors[0] }}</span>
+      </validation-provider>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="instrument" class="col-sm-3 col-form-label">Instrument*</label>
+    <div class="col-sm-9">
+      <validation-provider rules="required" v-slot="{ errors }">
+        <select id="instrument" v-model="templateVariables.instrument" class="custom-select">
+          <option v-for="instrument in [{text: 'Antitrust', value: 'InstrumentAT'}, {text: 'Merger', value: 'InstrumentM'}, {text: 'State Aid', value: 'InstrumentSA'}, {text: 'Horizontal', value: 'InstrumentHP'}]"
+                  v-bind:value="instrument.value">
+            {{instrument.text}}
+          </option>
+        </select>
+        <span class="error">{{ errors[0] }}</span>
+      </validation-provider>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+@startuml
+
+partition "System-User (eTrustEx Web)"
+skinparam activity {
+BackgroundColor<< Status >> royalBlue
+FontColor<< Status >> white
+FontStyle<< Status >> bold
+BackgroundColor<< DB >> grey
+BackgroundColor<< SystemAction >> MediumTurquoise
+BackgroundColor<< WebAction >> DarkSalmon
+BackgroundColor<< Notification >> Plum
+}
+
+(*) --> "Starts sending message" << SystemAction >>
+--> "Send attachments" << SystemAction >>
+--> "Send message text" << SystemAction >>
+--> "Finishes sending message" << SystemAction >>
+--> "Message created in eTrustEx Web" << DB >>
+--> "Sends back confirmation" << WebAction >>
+--> "DELIVERED [UPLOADED]" << Status >>
+--> "User reads message"
+--> "READ" << Status >>
+--> "Sends 'Read' status back" << WebAction >>
+
+@enduml

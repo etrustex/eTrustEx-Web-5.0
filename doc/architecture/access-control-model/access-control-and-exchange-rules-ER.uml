@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>52c19a10-ec91-412f-a398-dbbd798d4cd8.SCHEMA:ETXWEB4</OriginalElement>
+  <nodes>
+    <node x="-99.31244830438374" y="420.1691480562448">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_EXCHANGE_RULE</node>
+    <node x="462.8583333333333" y="402.0">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_ROLE</node>
+    <node x="349.5805555555555" y="646.0">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_POLICY</node>
+    <node x="450.7083333333333" y="0.0">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP</node>
+    <node x="761.8583333333333" y="379.0">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_USER</node>
+    <node x="787.625" y="680.5">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GRANTED_AUTHORITY</node>
+    <node x="-165.61464541959668" y="58.43676853279254">52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_CHANNEL</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GRANTED_AUTHORITY" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP">
+      <point x="93.0" y="-97.0" />
+      <point x="1020.125" y="621.0" />
+      <point x="1104.3583333333333" y="621.0" />
+      <point x="1104.3583333333333" y="349.0" />
+      <point x="809.8083333333334" y="349.0" />
+      <point x="159.60000000000002" y="154.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_EXCHANGE_RULE" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_CHANNEL">
+      <point x="-78.25" y="-97.0" />
+      <point x="0.0" y="85.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_POLICY" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_ROLE">
+      <point x="69.75" y="-131.5" />
+      <point x="558.8305555555555" y="621.0" />
+      <point x="532.6083333333333" y="621.0" />
+      <point x="-69.75" y="85.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP">
+      <point x="-159.6" y="154.5" />
+      <point x="490.60833333333335" y="329.0" />
+      <point x="430.7083333333333" y="329.0" />
+      <point x="430.7083333333333" y="154.5" />
+      <point x="-199.5" y="-0.0" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GRANTED_AUTHORITY" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_ROLE">
+      <point x="-93.0" y="-97.0" />
+      <point x="834.125" y="621.0" />
+      <point x="672.1083333333333" y="621.0" />
+      <point x="69.75" y="85.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GRANTED_AUTHORITY" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_USER">
+      <point x="0.0" y="-97.0" />
+      <point x="0.0" y="108.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_USER" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP">
+      <point x="0.0" y="-108.5" />
+      <point x="927.8583333333333" y="359.0" />
+      <point x="730.0083333333332" y="359.0" />
+      <point x="79.79999999999995" y="154.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_EXCHANGE_RULE" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP">
+      <point x="78.25" y="-97.0" />
+      <point x="296.0" y="349.0" />
+      <point x="570.4083333333333" y="349.0" />
+      <point x="-79.80000000000001" y="154.5" />
+    </edge>
+    <edge source="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_POLICY" target="52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_GROUP">
+      <point x="-69.75" y="-131.5" />
+      <point x="419.3305555555555" y="621.0" />
+      <point x="448.9555555555555" y="621.0" />
+      <point x="448.9555555555555" y="359.0" />
+      <point x="650.2083333333333" y="359.0" />
+      <point x="0.0" y="154.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6225806451612903" x="469.5" y="455.0" />
+  <SelectedNodes>
+    <node>52c19a10-ec91-412f-a398-dbbd798d4cd8.TABLE:ETXWEB4.EW_CHANNEL</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+

@@ -1,0 +1,89 @@
+@startuml
+title Send Message API (API calls in <font color=blue>blue</font>)
+
+' System sending to Web (Recipient is human)
+
+activate Sender
+activate etrustexWebAPI
+'activate Recipient
+group#GreenYellow Retrieve server public key
+    autonumber "<b><font color=blue>0</font>"
+    Sender -> etrustexWebAPI: GET /message-api/v1/settings/public-key
+    autonumber stop
+    Sender <-[#blue]- etrustexWebAPI: 200 serverPublicKey: RsaPublicKeyDto
+end
+
+group#GreenYellow Generate AES-256 SymmetricKey & IV for Message
+    Sender -> Sender: messageAesKey = Aes.generateAesKey()
+    Sender -> Sender: messageIv = Aes.generateIv()
+end
+
+group#GreenYellow Generate AES-256 SymmetricKey for Attachments
+    Sender -> Sender: attachmentsAesKey = Aes.generateAesKey()
+end
+
+group#GreenYellow Create new message
+    autonumber resume
+    Sender -[#blue]> etrustexWebAPI: POST /message-api/v1/messages?senderEntityIdentifier&businessIdentifier
+    autonumber stop
+    Sender <-[#blue]- etrustexWebAPI: 201 message: {id: <font color=red><messageId></font>, senderGroup: {...}, links: [...]}
+end
+
+group#GreenYellow Create attachments
+     autonumber resume
+    Sender -[#blue]> etrustexWebAPI: POST /message-api/v1/attachments?messageId=<font color=red><messageId></font>&numberOfAttachments=<number of attachments>
+    autonumber stop
+    Sender <-[#blue]- etrustexWebAPI: 201 attachments: [{id: <font color=red><attachmentId></font>, links: [...]}, ...]
+
+end
+
+group#GreenYellow Encrypt & upload attachments
+    loop "for each attachment"
+        Sender -> Sender: Pipeline created that;\n - Computes SHA512 checksum of the file content\n - AES-256-GCM encrypt file in chunks up to 10Mb\n - Computes encrypted content checksum
+        note right
+            A 32 bytes authentication tag and 12 bytes IV is generated
+            and appended to each encrypted-chunk bytes
+        end note
+
+        autonumber resume
+            Sender -[#blue]> etrustexWebAPI: PUT /message-api/v1/attachments/<font color=red><attachmentId></font>/file?senderEntityId=<message.senderGroup.id>\n@RequestBody byte[] fileContent
+        autonumber stop
+        Sender <-[#blue]- etrustexWebAPI: 200 {checksum: '...', links: [...]}
+    end
+end
+
+group#GreenYellow Encrypt message text with messageAesKey
+    Sender -> Sender: message.text = Aes.gcmEncryptAndEncode(messageAesKey, messageIv, messageText)
+end
+
+group#GreenYellow Encrypt Message Symmetric Key with server public key
+    Sender -> Sender: <b>rsaEncryptedSymmetricKey</b> = Rsa.encrypt(serverPublicKey, messageAesKey)
+end
+
+group#GreenYellow Encrypt Attachments symmetric key for each recipient
+    loop "for each recipient"
+        alt "recipient requires encryption"
+            note right of Sender: If the recipient requires encryption, the attachmentsAesKey is RSA encrypted \nusing the Public Key of the recipient (with PKCS1 padding scheme)
+            Sender--> Sender: pubKey = recipient Public Key
+        else "recipient does not require encryption"
+            note right of Sender: If the recipient does not require encryption, the attachmentsAesKey is encrypted with the server public key
+            Sender--> Sender: pubKey = serverPublicKey
+        end
+    end
+end
+
+autonumber resume
+Sender -[#blue]> etrustexWebAPI: PUT /message-api/v1/messages/<font color=red><messageId></font>?<SendMessageRequestSpec>
+
+autonumber stop
+Sender <-[#blue]- etrustexWebAPI: 200 (Status DELIVERED)
+
+'Only if/when recipient is SYSTEM
+'etrustexWebAPI -> Recipient: POST <recipient-endpoint>/<message-id>
+'etrustexWebAPI <- Recipient: ACK response
+'
+'Sender <- etrustexWebAPI: <sender-endpoint>/<message-id> (Status DELIVERED)
+
+deactivate Sender
+deactivate etrustexWebAPI
+@enduml

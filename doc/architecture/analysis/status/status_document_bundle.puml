@@ -1,0 +1,19 @@
+@startuml
+
+skinparam activity {
+  BackgroundColor<< Status >> Magenta
+}
+
+partition Web {
+    (*) --> "Receive Document Bundle"
+    --> "Create Message"
+    --> "Node Sync Processing Retrieve"
+    --> if "Error?" then
+          note right: after retries
+        else
+          -->[no] "Update Message and create MessageSummaries"
+          --> "PROCESSING" << Status >>
+        endif
+}
+
+@enduml

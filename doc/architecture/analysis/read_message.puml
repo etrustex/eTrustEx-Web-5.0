@@ -1,0 +1,55 @@
+@startuml
+
+skinparam Shadowing false
+skinparam roundcorner 20
+skinparam maxmessagesize 150
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+skinparam SequenceBoxBackgroundColor AliceBlue
+skinparam ActorBorderColor SaddleBrown
+
+
+participant MessageSummaryController
+participant MessageSummaryService
+participant StatusAspect #Magenta
+participant MsgUserStatusService
+participant NotificationAspect #DarkTurquoise
+participant NotificationService
+
+activate StatusAspect
+activate NotificationAspect
+
+
+activate MessageSummaryController
+--> MessageSummaryController: get
+MessageSummaryController --> MessageSummaryService: find By Message Id And Recipient
+activate MessageSummaryService
+MessageSummaryController <- MessageSummaryService: return MessageSummary
+deactivate MessageSummaryService
+<-- MessageSummaryController: MessageSummary
+activate MessageSummaryController #Magenta
+MessageSummaryController o-[#Magenta]// StatusAspect : @AfterReturning
+deactivate MessageSummaryController
+
+activate StatusAspect #Magenta
+
+StatusAspect --[#Magenta]> MsgUserStatusService: update User Status to READ
+activate MsgUserStatusService #Magenta
+deactivate MsgUserStatusService
+
+MessageSummaryService <[#Magenta]-- StatusAspect: save MessageSummary status to READ
+deactivate StatusAspect
+activate MessageSummaryService #DarkTurquoise
+MessageSummaryService o-[#DarkTurquoise]// NotificationAspect: @Around save MessageSummary
+deactivate MessageSummaryService
+
+activate NotificationAspect #DarkTurquoise
+NotificationAspect --[#DarkTurquoise]> NotificationService: notify Of NewMessageSummary Status
+deactivate NotificationAspect
+activate NotificationService #DarkTurquoise
+NotificationService --[#DarkTurquoise]> : send email notification
+deactivate NotificationService
+
+
+@enduml

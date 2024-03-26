@@ -1,0 +1,136 @@
+build:
+  info: ${bamboo_build-info}
+  timestamp: ${bamboo_build-timestamp}
+  targetServerContextRoot: '@target.server.context.root@'
+  contextPath: "@context.path@"
+
+supportEmail: DIGIT-EU-SEND@ec.europa.eu
+
+env:
+  acc_bhs:
+    oidClientSettings:
+      authority: https://your.auth.service.host/cas/oauth2/authorize
+      metadataUrl: https://your.auth.service.host/cas/oauth2/.well-known/openid-configuration
+      client_id: P0ayROmWmEzhSWN2M22ghSglypsryip2xWezNsxMY7c2JVZCnDByxPcXEwjwxAqd4M2BfGkXSTLYof2jTp3ihT-jpJZscgsw0KbhmfnfQPu7G
+      redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      post_logout_redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    # acr_values: We do not use 2FA in ACC BHS
+    openIdUiDevelopmentSettings:
+      delegateLogin: false
+      # should be set to true on the server delegated for developers authentication
+      allowDevelopmentLogin: true
+    euLoginAccessTokenUrl: https://your.auth.service.host/cas/oauth2/token
+    tokenRequestPortNumber: 1143
+    # audience: the clientId of the backend app, where the access token will be sent
+    audience: dozZszaiqG2Jja1kEXaqSPSbvzVBgWpuA4W9Z6hpS9bumeAMyXvoUKkZW5xdBFqAdflNb8O6Q5JeZxFnNzrRoZG-yntOf97TTHqzPYPoytpyWj
+  test:
+    oidClientSettings:
+      authority: https://ecas.acceptance.ec.europa.eu/cas/oauth2/authorize
+      metadataUrl: https://ecas.acceptance.ec.europa.eu/cas/oauth2/.well-known/openid-configuration
+      client_id: EdUVoD3HEW9qG2xg9fmKWnkE6LC42qSzWaYrIcdntRxgVRf59nTzMjUebnJiIlmDDD7OZlimCMyDzVRLqHONzpK-ra8gnCF1lWayBenjPBbAEW
+      redirect_uri: https://webgate.test.ec.europa.eu/etrustex/web
+      post_logout_redirect_uri: https://webgate.test.ec.europa.eu/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    #      acr_values: https://ecas.ec.europa.eu/loa/medium
+    openIdUiDevelopmentSettings:
+      delegateLogin: false
+      allowDevelopmentLogin: true
+    euLoginAccessTokenUrl: https://ecas.acceptance.ec.europa.eu/cas/oauth2/token
+    tokenRequestPortNumber: 1143
+    # audience: the clientId of the backend app, where the access token will be sent
+    audience: fI71opEdzb9imjqKe0fgftlhmJicMQMtKGfiZ6ytl8xPmo0LnewIevP0nUjzqSKXBAPT5S6iC0Hu18RbXqB09q-NaAc23CqASeDvGNiZWIFEm
+
+  dev:
+    oidClientSettings:
+      authority: https://your.auth.service.host/cas/oauth2/authorize
+      metadataUrl: https://your.auth.service.host/cas/oauth2/.well-known/openid-configuration
+#  ACC SHS    client_id: pzSUbv2lTf2zJ36vmuyqzdnFjmy7A9kMQMVpXPhEjH1iGacafZAUEiaATPtumzQDzjtzIDvdwHyuqfZzHCazbiBd-yntOf97TTHq3WzdiZ7fibh
+      client_id: P0ayROmWmEzhSWN2M22ghSglypsryip2xWezNsxMY7c2JVZCnDByxPcXEwjwxAqd4M2BfGkXSTLYof2jTp3ihT-jpJZscgsw0KbhmfnfQPu7G
+      # audience: the clientId of the backend app, where the access token will be sent
+      redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      post_logout_redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    #      acr_values: https://ecas.ec.europa.eu/loa/medium
+    openIdUiDevelopmentSettings:
+      delegateLogin: true
+      allowDevelopmentLogin: false
+      # should be set to the delegate for login in the development environemnts (acc)
+#      loginDelegateUrl: https://etrustexweb-acc.eusfx.ec.europa.eu
+      loginDelegateUrl: https://webgate.acceptance.ec.europa.eu/etrustex/web
+    euLoginAccessTokenUrl: https://your.auth.service.host/cas/oauth2/token
+    tokenRequestPortNumber: 7002
+    # audience: the clientId of the backend app, where the access token will be sent
+    audience: dozZszaiqG2Jja1kEXaqSPSbvzVBgWpuA4W9Z6hpS9bumeAMyXvoUKkZW5xdBFqAdflNb8O6Q5JeZxFnNzrRoZG-yntOf97TTHqzPYPoytpyWj
+
+features:
+  features:
+    - id: ETRUSTEX_0000
+      description: sample Test task toggle feature enabled
+      dev: true
+      test: true
+      acc: true
+      prod: true
+      acc_bhs: true
+    - id: ETRUSTEX_0001
+      description: sample Test task toggle feature disabled
+      dev: false
+      test: false
+      acc: false
+      prod: false
+      acc_bhs: true
+
+    - id: ETRUSTEX_6659
+      description: Clean up after tests
+      dev: true
+      test: true
+      acc: false
+      prod: false
+      acc_bhs: false
+
+    - id: ETRUSTEX_6788
+      description: Display unused icons in TopMenu
+      dev: true
+      test: false
+      acc: false
+      prod: false
+      acc_bhs: false
+
+    - id: ETRUSTEX_7060
+      description: UVScan PoC. https://webgate.acceptance.ec.europa.eu/etrustex/web#/uvscan/test
+      dev: false
+      test: true
+      acc: false
+      prod: false
+      acc_bhs: true
+
+    - id: ETRUSTEX_7922
+      description: the BDL:10 application response should not be sent from ACC-BHS
+      dev: true
+      test: true
+      acc: true
+      prod: true
+      acc_bhs: false
+
+    - id: ETRUSTEX_7980
+      description: REST API For systems
+      dev: true
+      test: true
+      acc: false
+      prod: false
+      acc_bhs: true
+
+
+#    - id: ETRUSTEX_7943
+#      description: enable caching. Caching server must be set up for the environment
+#      See EnableCacheCondition.java
+

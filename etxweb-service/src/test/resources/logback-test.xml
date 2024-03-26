@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<root level="ERROR"/>
+	<appender name="InMemory" class="eu.europa.ec.etrustex.web.service.logging.MemoryAppender" />
+
+	<springProfile name="log-test">
+		<logger name="eu.europa.ec.etrustex" level="all">
+			<appender-ref ref="InMemory" />
+		</logger>
+	</springProfile>
+</configuration>

@@ -1,0 +1,46 @@
+plugins {
+    id 'base'
+    id 'jacoco-report-aggregation'
+}
+
+dependencies {
+    jacocoAggregation project(':etxweb-rest')
+    jacocoAggregation project(':etxweb-service')
+    jacocoAggregation project(':etxweb-persistence:repository')
+    jacocoAggregation project(':etxweb-persistence:entity')
+    jacocoAggregation project(':etxweb-exchange')
+    jacocoAggregation project(':etxweb-common')
+    jacocoAggregation project(':etxweb-utils')
+}
+
+reporting {
+    reports {
+        testCodeCoverageReport(JacocoCoverageReport) {
+            testType = TestSuiteType.UNIT_TEST
+        }
+    }
+}
+
+
+def excludedCoverage = [
+        '**/*Test.*',
+        '**/test/**',
+        '**/oasis/**',
+        '**/ec/schema/**',
+        '**/org/**',
+        '**/un/**'
+]
+testCodeCoverageReport {
+    getClassDirectories().setFrom(files(
+            [project(':etxweb-rest'),
+             project(':etxweb-service'),
+             project(':etxweb-persistence:repository'),
+             project(':etxweb-persistence:entity'),
+             project(':etxweb-exchange'),
+             project(':etxweb-common'),
+             project(':etxweb-utils')
+            ].collect {
+                it.fileTree(dir: "${it.buildDir}/classes", exclude: excludedCoverage)
+            }
+    ))
+}

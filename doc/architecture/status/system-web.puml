@@ -1,0 +1,27 @@
+@startuml
+
+partition "System-User (eTrustEx Web)"
+skinparam activity {
+BackgroundColor<< Status >> royalBlue
+FontColor<< Status >> white
+FontStyle<< Status >> bold
+BackgroundColor<< DB >> grey
+BackgroundColor<< SystemAction >> DarkCyan
+BackgroundColor<< WebAction >> Ivory
+BackgroundColor<< Notification >> Lavender
+}
+skinparam defaultTextAlignment center
+
+(*) --> "System sends a message" << SystemAction >>
+--> "Message created in eTrustEx Web" << DB >>
+--> "Create record in MESSAGE_USER_STATUS" << DB >>
+--> "DELIVERED [UPLOADED]" << Status >>
+--> "User reads message"
+--> "Create record in
+    MESSAGE_SUMMARY_
+    USER_STATUS" <<db>>
+--> "READ" << Status >>
+--> "eTrustEx sends 'READ'
+notification to system" << Notification >>
+
+@enduml

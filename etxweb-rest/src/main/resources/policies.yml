@@ -1,0 +1,692 @@
+policies:
+  definitions:
+    ###########
+    ## Alert ##
+    ###########
+    ## Retrieve
+    - name: Allow system admin to retrieve alerts
+      description: Users with role SYS_ADMIN can retrieve any Alert
+      target: action == 'RETRIEVE' && target == 'Alert'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow users to retrieve alerts within the business
+      description: Users with any role can retrieve the Alert for their Business
+      target: action == 'RETRIEVE' && target == 'Alert'
+      condition: environment[userBusinessesIds].contains(environment[businessId])
+
+
+    ## Create
+    - name: Allow system admin to create alerts
+      description: Users with role SYS_ADMIN can retrieve any Alert
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.exchange.model.AlertSpec)
+      condition: principal.isSystemAdmin()
+
+    - name: Allow business admin to create alerts
+      description: Users with role GROUP_ADMIN can create the Alert for their Business
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.exchange.model.AlertSpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', target.groupId)
+
+    ## Update
+    - name: Allow system admin to update alerts
+      description: Users with role SYS_ADMIN can retrieve any Alert
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.exchange.model.AlertSpec)
+      condition: principal.isSystemAdmin()
+
+    - name: Allow business admin to update alerts
+      description: Users with role GROUP_ADMIN can update the Alert for their Business
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.exchange.model.AlertSpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', target.groupId)
+
+
+    #####################
+    ## AlertUserStatus ##
+    #####################
+    ## Retrieve
+    - name: Allow system admin to retrieve AlertUserStatus
+      description: Users with role SYS_ADMIN can retrieve any AlertUserStatus
+      target: action == 'RETRIEVE' && target == 'AlertUserStatus'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow users to retrieve AlertUserStatus within the business
+      description: Users with any role can retrieve the AlertUserStatus for their Business
+      target: action == 'RETRIEVE' && target == 'AlertUserStatus'
+      condition: environment[userBusinessesIds].contains(environment[businessId])
+
+    ## Create
+    - name: Allow users to create AlertUserStatus within the business
+      description: Users with any role can create the AlertUserStatus for their Business
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.exchange.model.AlertUserStatusSpec)
+      condition: target.groupId == environment[businessId] || target.groupId == environment[rootId]
+
+    ## Update
+    - name: Allow users to update AlertUserStatus within the business
+      description: Users with any role can update the AlertUserStatus for their Business
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.exchange.model.AlertUserStatusSpec)
+      condition: target.groupId == environment[businessId] || target.groupId == environment[rootId]
+
+
+    ################
+    ## Attachment ##
+    ################
+    ## Retrieve
+    - name: Allow operator to retrieve attachment
+      description: User with role OPERATOR can retrieve attachments if user belongs to sender or recipient group
+      target: action == 'RETRIEVE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Attachment)
+      condition: principal.hasAuthority('OPERATOR', target.message.senderGroup.id) || environment[isRecipient]
+
+    ## Create
+    - name: Allow operator to create attachment
+      description: User with role OPERATOR can create attachments for sending a message
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Message)
+      condition: principal.hasAuthority('OPERATOR', target.senderGroup.id) && (target.status == null || target.status.name == 'DRAFT')
+
+    ## Update
+    - name: Allow operator to upload attachment
+      description: User with role OPERATOR can upload attachments for sending a message
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Attachment)
+      condition: principal.hasAuthority('OPERATOR', target.message.senderGroup.id) && (target.message.status == null || target.message.status.name == 'DRAFT')
+
+    ## Delete
+    - name: Allow operator to delete attachment
+      description: User with role OPERATOR can delete attachments for sending a message
+      target: principal.hasAuthority('OPERATOR') && action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Attachment)
+      condition: principal.hasAuthority('OPERATOR', target.message.senderGroup.id) && (target.message.status == null || target.message.status.name == 'DRAFT')
+
+    - name: Allow operator to bulk delete attachments
+      description: User with role OPERATOR can bulk delete attachments
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Message)
+      condition: principal.hasAuthority('OPERATOR', target.senderGroup.id) && target.status == null
+
+
+    #############
+    ## Channel ##
+    #############
+    ## Retrieve Channel
+    - name: Allow System Admin to retrieve channels
+      description: User with role SYS_ADMIN can retrieve channels for any Business
+      target: action == 'RETRIEVE' && target == 'Channel'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to retrieve channels
+      description: User with role GROUP_ADMIN can retrieve channels of their Business
+      target: action == 'RETRIEVE' && target == 'Channel'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    ## Create Channel
+    - name: Allow System Admin to create channels
+      description: User with role SYS_ADMIN can create channels for any Business
+      target: action == 'CREATE' && target == 'Channel'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to create channels
+      description: User with role GROUP_ADMIN can create channels for their Business
+      target: action == 'CREATE' && target == 'Channel'
+      condition: environment[channelSpec] != null && principal.hasAuthority('GROUP_ADMIN', environment[channelSpec].businessId)
+
+
+      ## Update Channel
+    - name: Allow System Admin to update channels
+      description: User with role SYS_ADMIN can update channels for any Business
+      target: action == 'UPDATE' && target == 'Channel'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to update channels
+      description: User with role GROUP_ADMIN can update channels for their Business
+      target: principal.hasAuthority('GROUP_ADMIN') && action == 'UPDATE' && target == 'Channel'
+      condition: environment[channelSpec] != null && principal.hasAuthority('GROUP_ADMIN', environment[channelSpec].businessId)
+
+
+      ## Delete Channel
+    - name: Allow System Admin to delete channels
+      description: User with role SYS_ADMIN can delete channels for any Business
+      target: action == 'DELETE' && target == 'Channel'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to delete channels
+      description: User with role GROUP_ADMIN can delete channels belonging to their Business
+      target: principal.hasAuthority('GROUP_ADMIN') && action == 'DELETE' && target == 'Channel'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ##################
+    ## ExchangeRule ##
+    ##################
+    ## Retrieve ExchangeRule
+    - name: Allow System Admin to retrieve ExchangeRules
+      description: User with role SYS_ADMIN can retrieve ExchangeRules for any Business
+      target: action == 'RETRIEVE' && target == 'ExchangeRule'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to retrieve ExchangeRules
+      description: User with role GROUP_ADMIN can retrieve ExchangeRules of their Business
+      target: principal.hasAuthority('GROUP_ADMIN') && action == 'RETRIEVE' && target == 'ExchangeRule'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allow entity admins to retrieve valid recipients
+      description: User with role GROUP_ADMIN can retrieve the valid recipients for their entity
+      target: action =='RETRIEVE' && target =='ExchangeRule'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allow entity operators to retrieve valid recipients
+      description: User with role OPERATOR can retrieve the valid recipients for their entity
+      target: action =='RETRIEVE' && target =='ExchangeRule'
+      condition: principal.hasAuthority('OPERATOR', environment[senderEntityId])
+
+
+    ## Create ExchangeRule
+    - name: Allow System Admin to create ExchangeRules
+      description: User with role SYS_ADMIN can create ExchangeRules for any Business
+      target: action == 'CREATE' && target == 'ExchangeRule'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to create ExchangeRules
+      description: User with role GROUP_ADMIN can create or update ExchangeRules of their Business
+      target: action == 'CREATE' && target == 'ExchangeRule'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ## Update ExchangeRule
+    - name: Allow System Admin to update ExchangeRules
+      description: User with role SYS_ADMIN can update ExchangeRules for any Business
+      target: action == 'UPDATE' && target == 'ExchangeRule'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to update ExchangeRules
+      description: User with role GROUP_ADMIN update ExchangeRules of their Business
+      target: action == 'UPDATE' && target == 'ExchangeRule'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ## Delete ExchangeRule
+    - name: Allow System Admin to delete ExchangeRules
+      description: User with role SYS_ADMIN can delete ExchangeRules for any Business
+      target: action == 'DELETE' && target == 'ExchangeRule'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to delete ExchangeRules
+      description: User with role GROUP_ADMIN can delete ExchangeRules of their Business
+      target: action == 'DELETE' && target == 'ExchangeRule'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+
+
+    #######################
+    ## Granted Authority ##
+    #######################
+    ## Create GrantedAuthority
+    - name: Allow System Admin to create granted authority
+      description: User with role SYS_ADMIN can create granted authority
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec)
+      condition: principal.isSystemAdmin()
+
+    - name: Allow business Admin to create granted authorities within their business
+      description: Business administrators can create granted authorities with roles GROUP_ADMIN and OPERATOR for their business
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec) && target.roleName != T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).SYS_ADMIN
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allow Entity Admin to create granted authority
+      description: Entity administrators can create granted authorities with roles GROUP_ADMIN and OPERATOR for their entity
+      target: action == 'CREATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec) && target.roleName != T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).SYS_ADMIN
+      condition: principal.hasAuthority('GROUP_ADMIN', target.groupId)
+
+    ## Update GrantedAuthority
+    - name: Allow System Admin to update granted authority
+      description: User with role SYS_ADMIN can update granted authority
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec)
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to update granted authority
+      description: Business administrators can update granted authorities for entities in their Business
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allow Group Admin to update granted authority
+      description: User with role GROUP_ADMIN in a Group can update that granted authority if principal is not being disabled for that group
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec) && target.roleName != T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).SYS_ADMIN
+      condition: principal.hasAuthority('GROUP_ADMIN', target.groupId) && !(target.userName == principal.username && !target.enabled)
+
+
+    ## Delete GrantedAuthority
+    - name: Allow System Admin to delete granted authority
+      description: User with role SYS_ADMIN can delete granted authority (except their own)
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec)
+      condition: principal.isSystemAdmin() && ( target.userName != principal.username || target.roleName != T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).SYS_ADMIN )
+
+    - name: Allow Business Admin to delete granted authorities within their business
+      description: Business administrators can delete granted authorities with roles GROUP_ADMIN (except their own) and OPERATOR for their business
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId]) && ( target.groupId != environment[businessId] || target.userName != principal.username )
+
+    - name: Allow Entity Admin to delete granted authority
+      description: Entity administrators can delete granted authorities with roles OPERATOR for their entity
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.GrantedAuthoritySpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', target.groupId) && (target.userName != principal.username || target.roleName == T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).OPERATOR)
+
+
+
+    ###########
+    ## Group ##
+    ###########
+    ## Retrieve Group
+    - name: Allow System Admin to retrieve any Group or list of Groups
+      description: User with role SYS_ADMIN can retrieve any Group or list of Groups
+      target: action == 'RETRIEVE' && target == 'Group'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Official in Charge to retrieve the list of Businesses
+      description: User with role OFFICIAL_IN_CHARGE can retrieve a list of Businesses
+      target: action == 'RETRIEVE' && target == 'Group'
+      condition: principal.isOfficialInCharge()
+
+    - name: Allow Business Admin to retrieve Group
+      description: User with role GROUP_ADMIN in a Business can retrieve Groups for that Business
+      target: action == 'RETRIEVE' && target == 'Group' && environment.containsKey("targetGroup")
+      condition: principal.isEntityOrBusinessAdmin(environment[targetGroup].businessId)
+
+    - name: Allow Entity or Business admin to retrieve a Group or a list of Groups in their business
+      description: User with role GROUP_ADMIN can retrieve Group or lists of Groups (Active or inactive) that belong to the user's Business
+      target: action == 'RETRIEVE' && target == 'Group' && environment.containsKey("targetGroupIds")
+      condition: principal.isEntityOrBusinessAdmin(environment[targetGroupIds])
+
+    - name: Allow Entity Admin to retrieve an Entity
+      description: User with role GROUP_ADMIN can retrieve Group for which is admin
+      target: action == 'RETRIEVE' && target == 'Group' && environment.containsKey("targetGroup")
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[targetGroup].id)
+
+    - name: Allow Operator to retrieve an entity
+      description: User with role OPERATOR can retrieve Group of type ENTITY (active)
+      target: action == 'RETRIEVE' && target == 'Group' && environment.containsKey("targetGroup") && environment[targetGroup].type == T(eu.europa.ec.etrustex.web.util.exchange.model.GroupType).ENTITY
+      condition: principal.hasAuthority('OPERATOR', environment[targetGroup].id) && environment[targetGroup].isActive
+    - name: Allow Operator to retrieve a Group or a list of Groups active in their business
+
+      description: User with role OPERATOR can retrieve Group or lists of Groups that belong to the user's Business and are active
+      target: action == 'RETRIEVE' && target == 'Group' && environment.containsKey("targetGroup")
+      condition: principal.belongsToBusiness(environment[targetGroup].businessId) && environment[targetGroup].isActive
+
+
+    ## Create Group
+    - name: Allow System Admin to create Group
+      description: User with role SYS_ADMIN can create Group
+      target: action == 'CREATE' && target == 'Group'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to create Entity
+      description: User with role GROUP_ADMIN in a Business can create Groups for that Business
+      target: action == 'CREATE' && target == 'Group'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[targetGroup].parentGroupId)
+
+
+    ## Update Group
+    - name: Allow System Admin to update Group
+      description: User with role SYS_ADMIN can modify an existing Group
+      target: action == 'UPDATE' && target == 'Group'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to update Business
+      description: User with role GROUP_ADMIN in a Business can update Groups of their Business
+      target: action == 'UPDATE' && target == 'Group'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[targetGroup].businessId)
+
+    - name: Allow Group Admin to update Group
+      description: User with role GROUP_ADMIN in a Group to update that group
+      target: action == 'UPDATE' && target == 'Group'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[targetGroup].id)
+
+    - name: Allow Official in Charge to cancel Business deletion
+      description: User with role OFFICIAL_IN_CHARGE can cancel the deletion of a business
+      target: action == 'UPDATE' && target == 'Group'
+      condition: principal.isOfficialInCharge() && environment[targetGroup].type.name == 'BUSINESS'
+
+
+    ## Delete Group
+    - name: Allow System Admin to delete Group
+      description: User with role SYS_ADMIN can delete any Group except ROOT
+      target: action == 'DELETE' && target == 'Group'
+      condition: principal.isSystemAdmin() && environment[targetGroup].type.name != 'ROOT'
+
+    - name: Allow Official in Charge to delete Group
+      description: User with role OFFICIAL_IN_CHARGE can delete any Group except ROOT
+      target: action == 'DELETE' && target == 'Group'
+      condition: principal.isOfficialInCharge() && environment[targetGroup].type.name != 'ROOT'
+
+    - name: Allow Business Admin to delete Entities in his business
+      description: User with role GROUP_ADMIN in a Business can delete Groups for that Business
+      target: principal.hasAuthority('GROUP_ADMIN') && action == 'DELETE' && target == 'Group'
+      condition: environment[targetGroup].type.name == 'ENTITY' && principal.hasAuthority('GROUP_ADMIN', environment[targetGroup].businessId)
+
+
+
+    #########################
+    ## Group Configuration ##
+    #########################
+    ## Retrieve GroupConfiguration
+    - name: Allow System Admin to retrieve GroupConfigurations of any business
+      description: User with role SYS_ADMIN can retrieve GroupConfigurations for any business
+      target: action == 'RETRIEVE' && target == 'GroupConfiguration'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Group Admin or Operators to retrieve GroupConfigurations of her business or entity
+      description: User with role GROUP_ADMIN or OPERATOR in a Business or Entity can retrieve GroupConfigurations for her business or entity
+      target: action == 'RETRIEVE' && target == 'GroupConfiguration'
+      condition: principal.belongsToBusiness(environment[groupId]) || principal.belongsToEntity(environment[groupId]) || principal.belongsToBusiness(environment[businessId])
+
+
+    ## Update GroupConfiguration
+    - name: Allow System Admin to update GroupConfigurations of any business
+      description: User with role SYS_ADMIN can update GroupConfigurations for any business
+      target: action == 'UPDATE' && target == 'GroupConfiguration'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Group Admin to update GroupConfigurations of her business
+      description: User with role GROUP_ADMIN in a Business can update GroupConfigurations for her business
+      target: action == 'UPDATE' && target == 'GroupConfiguration'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId])
+
+
+
+
+    ###############
+    ## Message  ##
+    ###############
+    ## Retrieve
+    - name: Allow operator to read message and download attachments
+      description: User with role OPERATOR can read and download attachments if user belongs to recipient group
+      target: action == 'RETRIEVE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Message)
+      condition: principal.hasAuthority('OPERATOR', target.senderGroup.id)
+
+    - name: Allow operator to read sent messages
+      description: User with role OPERATOR can read messages sent by parent group
+      target: action == 'RETRIEVE' && target == 'Message'
+      condition: principal.hasAuthority('OPERATOR')
+
+
+    ## Create
+    - name: Allow operator to create message
+      description: User with role OPERATOR can create message
+      target: action == 'CREATE' && target == 'Message'
+      condition: principal.hasAuthority('OPERATOR', environment[senderEntityId])
+
+
+    ## Update
+    - name: Allow operator to send message
+      description: User with role OPERATOR can send message if recipients are valid for sender
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Message)
+      condition: principal.hasAuthority('OPERATOR', target.senderGroup.id) && environment[validRecipients].containsAll(environment[recipients]) && (target.status == null || target.status.name == 'DRAFT')
+
+
+    ## Delete
+    - name: Allow operator to delete draft message
+      description: User with role OPERATOR can delete draft message
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.persistence.entity.Message)
+      condition: principal.hasAuthority('OPERATOR', target.senderGroup.id) && target.status.name == 'DRAFT'
+
+    - name: Allow test user to clean up messages
+      description: User n006a7q1 can delete messages, attachments, files, etc. created by tests
+      target: action == 'DELETE' && target == 'Message'
+      condition: principal.username == 'n006a7q1'
+
+
+    #####################
+    ## Message Summary ##
+    #####################
+    ## Retrieve
+    - name: Allow operator to read message summaries
+      description: User with role OPERATOR can read message summaries of selected group inbox
+      target: action == 'RETRIEVE' && target == 'MessageSummary'
+      condition: principal.hasAuthority('OPERATOR', environment[recipientEntityId])
+
+    - name: Allow operator to retrieve message summary
+      description: User with role OPERATOR can read message summaries of selected group inbox
+      target: action == 'RETRIEVE' && target == 'MessageSummary' && environment[messageSummary] != null
+      condition: principal.hasAuthority('OPERATOR', environment[recipientEntityId]) && environment[messageSummary].recipient.id == environment[recipientEntityId]
+
+    - name: Allow BusinessAdmin or SystemAdmin to retrieve message
+      description: User with role GROUP_ADMIN or SystemAdmin can retrieve message
+      target: action == 'RETRIEVE' && target == 'MessageSummary'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId]) || principal.isSystemAdmin()
+
+    ## Update
+    - name: Allow operator to update message summaries
+      description: User with role OPERATOR can update message summaries of selected group inbox
+      target: action == 'UPDATE' && target == 'MessageSummary'
+      condition: principal.hasAuthority('OPERATOR', environment[recipientEntityId])
+
+    - name: Allow BusinessAdmin or SystemAdmin to update message
+      description: User with role GROUP_ADMIN or SystemAdmin can update message
+      target: action == 'UPDATE' && target == 'MessageSummary'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId]) || principal.isSystemAdmin()
+
+
+    #################################
+    ## Message Summary User Status ##
+    #################################
+    - name: Allow administrator to see what users read a message
+      description: User with role GROUP_ADMIN can see witch users read a message
+      target: action == 'RETRIEVE' && target == 'MessageSummaryUserStatus'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[recipientEntityId]) || principal.hasAuthority('GROUP_ADMIN', environment[businessId]) || principal.isSystemAdmin()
+
+    ###########################
+    ## Recipient Preferences ##
+    ###########################
+    ## Retrieve
+    - name: Allows System Admin to retrieve existing RecipientPreferences
+      description: User with role SYS_ADMIN can retrieve any RecipientPreferences
+      target: action == 'RETRIEVE' && target == 'RecipientPreferences'
+      condition: principal.isSystemAdmin()
+
+    - name: Allows Group admins to retrieve the RecipientPreferences
+      description: GROUP_ADMINS can retrieve the RecipientPreferences of their group
+      target: action == 'RETRIEVE' && target == 'RecipientPreferences'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId])
+
+    ## Create
+    - name: Allows System Admin to create new RecipientPreferences
+      description: User with role SYS_ADMIN can create RecipientPreferences
+      target: action == 'CREATE' && target == 'RecipientPreferences'
+      condition: principal.isSystemAdmin()
+
+    - name: Allows Group admins to create new RecipientPreferences
+      description: User with role GROUP_ADMIN can create RecipientPreferences
+      target: action == 'CREATE' && target == 'RecipientPreferences'
+      condition: principal.hasAuthority('GROUP_ADMIN') || principal.hasAuthority('SYS_ADMIN')
+
+
+    ## Update
+    - name: Allows System Admin to update existing RecipientPreferences
+      description: User with role SYS_ADMIN can modify any RecpientPreferences
+      target: action == 'UPDATE' && target == 'RecipientPreferences'
+      condition: principal.isSystemAdmin()
+
+    - name: Allows Group admins to update existing RecipientPreferences
+      description: GROUP_ADMINS can modify RecipientPreferences of their group
+      target: action == 'UPDATE' && target == 'RecipientPreferences'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId]) || principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ##################
+    ## Template ##
+    ##################
+    ## Retrieve
+    - name: Allows System or Business admin to retrieve existing Templates
+      description: User with admin role can retrieve templates
+      target: action == 'RETRIEVE' && target == 'Template'
+      condition: principal.isSystemAdmin() || principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    ## Update
+    - name: Allows System or Business admin to update existing Templates
+      description: User with admin role can update templates
+      target: action == 'UPDATE' && target == 'Template'
+      condition: principal.isSystemAdmin() || principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ##################
+    ## UserExport ##
+    ##################
+    ## Retrieve
+    - name: Allow System Admin to Export business users data
+      description: User with role SYS_ADMIN can export UserExportItems for any Business
+      target: action == 'RETRIEVE' && target == 'UserExportItem'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to export UserExportItems
+      description: User with role GROUP_ADMIN can export UserExportItems for her business
+      target: action == 'RETRIEVE' && target == 'UserExportItem'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allow Entity Admin to export UserExportItems
+      description: User with role GROUP_ADMIN can export UserExportItems for her entity
+      target: action == 'RETRIEVE' && target == 'UserExportItem'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[entityId])
+
+
+    ###################
+    ## ChannelExport ##
+    ###################
+    ## Retrieve
+    - name: Allow System Admin to Export channels data
+      description: User with role SYS_ADMIN can export ChannelExportItem for any Business
+      target: action == 'RETRIEVE' && target == 'ChannelExportItem'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to export channels data
+      description: User with role GROUP_ADMIN can export ChannelExportItem for her business
+      target: action == 'RETRIEVE' && target == 'ChannelExportItem'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ##################
+    ## User Profile ##
+    ##################
+    ## Retrieve User Profile
+    - name: Allows System Admin to retrieve User Profile
+      description: User with role SYS_ADMIN can retrieve user profile
+      target: action == 'RETRIEVE' && target == 'UserProfile'
+      condition: principal.isSystemAdmin()
+
+    - name: Allows Group Admin to retrieve User Profile in their business
+      description: User with role GROUP_ADMIN can look for a user profile within their Entity or Business
+      target: action == 'RETRIEVE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId]) || principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allows EntityAdmin to Fetch eulogin from LDAP group
+      description: User with role GROUP_ADMIN can retrieve eulogin info from ldap group
+      target: action == 'RETRIEVE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId])
+
+
+    ## Create User Profile
+    - name: Allows System Admin to create new User Profile
+      description: User with role SYS_ADMIN can create user profile
+      target: action == 'CREATE' && target == 'UserProfile'
+      condition: principal.isSystemAdmin()
+
+    - name: Allows Business Admin to create new User Profile for Entities of his business
+      description: User with role GROUP_ADMIN on a business can create user profiles for entities within his business
+      target: action == 'CREATE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allows Entity Admin to create new User Profile for his entity and a BusinessAdmin to create a new User Profile for his Business
+      description: User with role GROUP_ADMIN can create user profile in their group
+      target: action == 'CREATE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId])
+
+    ## Update User Profile
+    - name: Allows System Admin to update User Profile
+      description: User with role SYS_ADMIN can update user profile
+      target: action == 'UPDATE' && target == 'UserProfile'
+      condition: principal.isSystemAdmin()
+
+    - name: Allows EntityAdmin to update User Profile for his entity
+      description: User with role GROUP_ADMIN can update user profile in their group
+      target: action == 'UPDATE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[groupId])
+
+    - name: Allows BusinessAdmin to update User Profile for his Business
+      description: User with role group admin can update user profile
+      target: action == 'UPDATE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    - name: Allows BusinessAdmin to bulk User
+      description: User with role group admin can add bulk user
+      target: action == 'UPDATE' && target == 'UserProfile'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    ## Delete User Profile
+    - name: Allows System Admin to delete User Profile
+      description: User with role SYS_ADMIN can delete user profile
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.DeleteUserProfileSpec)
+      condition: principal.isSystemAdmin() && (target.ecasId != principal.username || environment[role] != T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).SYS_ADMIN)
+
+    - name: Allows BusinessAdmin to delete User Profiles for groups within her business
+      description: User with role group admin can delete user profile
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.DeleteUserProfileSpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId]) && (target.ecasId != principal.username || environment[groupType] == T(eu.europa.ec.etrustex.web.util.exchange.model.GroupType).ENTITY)
+
+    - name: Allows Group admin to delete OPERATORS and other GROUP_ADMINs of his group
+      description: User with role group admin can delete operators and other user group admins from his group
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.DeleteUserProfileSpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', target.groupId) && (target.ecasId != principal.username || environment[role] == T(eu.europa.ec.etrustex.web.util.exchange.model.RoleName).OPERATOR)
+
+
+    ##################
+    ## User Guide ##
+    ##################
+    ## Retrieve
+    - name: Allow System Admin to retrieve user guides
+      description: User with role SYS_ADMIN can retrieve user guides for any Business
+      target: action == 'RETRIEVE' && target == 'UserGuide'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to retrieve user guide
+      description: User with role GROUP_ADMIN can retrieve user guides for her business
+      target: action == 'RETRIEVE' && target == 'UserGuide'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    ## Update
+    - name: Allow System Admin to upload user guide
+      description: User with role SYS_ADMIN can upload user guide for any Business
+      target: action == 'UPDATE' && target == 'UserGuide'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to upload user guide
+      description: User with role GROUP_ADMIN can upload user guide for her business
+      target: action == 'UPDATE' && target == 'UserGuide'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+    ## Delete
+    - name: Allow System Admin to delete user guides
+      description: User with role SYS_ADMIN can delete user guides for any Business
+      target: action == 'DELETE' && target == 'UserGuide'
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Business Admin to delete user guide
+      description: User with role GROUP_ADMIN can delete user guide for her business
+      target: action == 'DELETE' && target == 'UserGuide'
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId])
+
+
+    ###############################
+    ## User Registration Request ##
+    ###############################
+    ## Update
+    - name: Allow System Admin to update user registration request
+      description: User with role SYS_ADMIN can update user registration request
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.UserRegistrationRequestSpec)
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Entity Admin or business Admin to update user registration requests within their entity
+      description: Business administrators or entity administrators can update user registration requests for their business
+      target: action == 'UPDATE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.UserRegistrationRequestSpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId]) || principal.hasAuthority('GROUP_ADMIN', target.groupId)
+
+    ## Delete
+    - name: Allow System Admin to delete user registration request
+      description: User with role SYS_ADMIN can create user registration request
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.BaseUserRegistrationRequestSpec)
+      condition: principal.isSystemAdmin()
+
+    - name: Allow Entity Admin or business Admin to delete user registration requests within their entity
+      description: Business administrators or entity administrators can delete user registration requests for their business
+      target: action == 'DELETE' && target instanceof T(eu.europa.ec.etrustex.web.service.validation.model.BaseUserRegistrationRequestSpec)
+      condition: principal.hasAuthority('GROUP_ADMIN', environment[businessId]) || principal.hasAuthority('GROUP_ADMIN', target.groupId)

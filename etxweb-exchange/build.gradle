@@ -1,0 +1,19 @@
+plugins {
+    id 'etrustexweb.java-conventions'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+    implementation "commons-codec:commons-codec:${apacheCommonsCodecVersion}"
+
+    implementation project(':etxweb-common')
+    compileOnly "javax.validation:validation-api:$validationApiVersion"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "javax.validation:validation-api:$validationApiVersion"
+    testRuntimeOnly 'org.springframework:spring-web'
+
+    testImplementation(testFixtures(project(':etxweb-utils')))
+}
+

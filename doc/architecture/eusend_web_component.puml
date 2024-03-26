@@ -1,0 +1,49 @@
+@startuml
+!include C4-PlantUML/C4_Component.puml
+
+'LAYOUT_WITH_LEGEND
+
+title Component diagram for ETX WEB 4.x- BACK-END
+
+Container(vueapp, "Client Side Application", "Vue.js", "Provides all functionality to users via their web browser.")
+System_Ext(eulogin, "EU Login", "EU Login authentication service")
+ContainerDb(rel_db, "Relational Database", "MySQL or Oracle", "Stores users, groups, configurations, messages, attachments, etc.")
+Container(filesystem, "File System", "NAS", "Stores encrypted files")
+System_Ext(nodesys, "eTrustEx Node")
+System_Ext(extsys, "External System")
+
+Container_Boundary(api, "Server Side Application") {
+    Component(rest_api, "REST Controller Component", "Spring Rest Controllers", "Process all requests to the REST API")
+    Component(security, "Security Component", "Spring Security", "Provides Authorization")
+    Component(service, "Service Component", "Spring", "Business logic")
+    Component(persistence, "Persistence Component", "Spring Data, JPA, Hibernate", "Persistence repository and entities")
+    Component(exchange, "Exchange Component", "Spring, Fasterxml Jackson", "Handles Java / JSON serialization and de-serialization between Client and Server")
+    Component(node, "Node Component", "Spring Webservices", "SOAP Webservice client and provider for messages exchanged via ETX Node")
+    Component(common, "Common Component", "Common Utils, Enums, Exceptions, etc")
+
+    Rel(rest_api, security, "Uses")
+    Rel(rest_api, exchange, "Uses")
+    Rel(rest_api, node, "Uses")
+    Rel(rest_api, extsys, "Sends and receives files", "HTTPS, REST, json")
+    Rel(node, nodesys, "Sends and receives files. For Node-dependent systems", "HTTP, SOAP, xml")
+}
+
+Rel(vueapp, rest_api, "Uses", "JSON/HTTPS")
+Rel(rest_api, eulogin, "EULogin Authentication for all requests", "HTTPS, Open Id")
+Rel(service, filesystem, "Writes / Reads")
+Rel(rest_api, service, "Uses")
+Rel(service, persistence, "Uses")
+Rel(persistence, rel_db, "Uses", "SQL/JDBC Datasource")
+
+Rel_D(rest_api, common, "Uses")
+Rel_D(security, common, "Uses")
+Rel_D(service, common, "Uses")
+Rel_L(persistence, common, "Uses")
+Rel_D(exchange, common, "Uses")
+Rel_D(node, common, "Uses")
+
+
+Lay_D(nodesys, rel_db)
+Lay_R(rel_db, filesystem)
+
+@enduml

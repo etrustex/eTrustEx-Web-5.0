@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--/* Note the xmlns:* here are completely optional and only meant to avoid IDEs from complaining about tags/attributes they may not know */-->
+<!--/* xmlns:attachment processor is eu.europa.ec.etrustex.web.service.template.dialect.MessageDialect */-->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:message="">
+<head>
+    <title th:remove="all">Template for HTML GENERIC email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+<p>Dear user,</p>
+<br>
+
+<div th:switch="${status}">
+    <div th:case="${T(eu.europa.ec.etrustex.web.util.exchange.model.Status).READ.name()}">
+        <p>
+            <span th:text="${'The message ' + messageSubject +  ' sent by ' + senderName + ' from ' + senderGroupName + ' to ' + recipientGroupName + ' has been read by the receiver.'}"></span>
+        </p>
+        <br>
+        <p>
+            You can use the following link for viewing the full details of the message: <a message:permalink="sent" th:text="here"></a>
+        </p>
+    </div>
+
+    <div th:case="*">
+        <p>
+            <span th:text="${'The message ' + messageSubject +  ' sent by ' + senderName + ' from ' + senderGroupName + ' to ' + recipientGroupName + ' is in status ' + status + '.'}"></span>
+        </p>
+        <br>
+        <p>
+            You can use the following link for viewing the full details of the message: <a message:permalink="sent" th:text="here"></a>
+        </p>
+    </div>
+</div>
+
+<br>
+<p>
+    This message has been generated automatically by ETRUSTEX WEB. Please do not reply.
+</p>
+<br><br>
+<p>
+    Kind regards,<br/>
+    e-TrustEx Team
+</p>
+</body>
+</html>

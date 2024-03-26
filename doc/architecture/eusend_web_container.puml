@@ -1,0 +1,43 @@
+@startuml "etrustex-web"
+!include C4-PlantUML/C4_Container.puml
+
+
+title eTrustEx Web Application
+
+Person(web_user, "Web User")
+System(system, "System")
+System(node, "eTrustEx Node")
+
+
+System_Boundary(c1, "/etrustex/web"){
+    Container(rest_api, "REST BACK-END", "Java, Spring, JPA, Hibernate", "Exposes REST API and communicates with ETX Node via SOAP Websrevices.\n Handles Access Rights, performs Business Logic and persists data and files")
+
+    Container(web_app, "Web Container", "Java, Spring", "Serves static content to the User's browser")
+
+    Container(vue_app, "Vue.js Application", "Packaged Javascript, HTML and CSS static content", "Allows Web users to upload and download files with client side encryption, signing and content verification")
+}
+
+System_Ext(eulogin, "EU Login", "EU Login authentication service")
+
+ContainerDb(rel_db, "Relational Database", "MySQL or Oracle", "Stores users, groups, configurations, messages, attachments, etc.")
+
+Container(filesystem, "File System", "NAS", "Stores encrypted files")
+
+
+Rel(web_user, web_app, "Visits /etrustex/web", "HTTPS")
+Rel_R(web_app, vue_app, "Sends Javascript Client Side Application to browser")
+Rel(vue_app, rest_api, "Sends to and receives data from Server using REST API", "HTTPS, REST, json")
+Rel(web_user, vue_app, "Uses", "HTTPS")
+
+Rel(system, rest_api, "Sends to and receives data from Server using REST API", "HTTPS, REST, json")
+Rel(node, rest_api, "Uses", "HTTP, SOAP, XML")
+Rel_R(rest_api, eulogin, "EULogin Open Id Authentication for all requests")
+
+Rel(rest_api, filesystem, "Uses", "HTTPS, REST, json")
+
+Rel(rest_api, rel_db, "Uses", "SQL/JDBC")
+
+'Lay_L(web_app, vue_app)
+'Lay_D(rest_api, vue_app)
+
+@enduml

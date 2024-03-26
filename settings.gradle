@@ -1,0 +1,12 @@
+rootProject.name = 'etrustex-web'
+include 'etxweb-rest'
+include 'etxweb-common'
+include 'etxweb-persistence:entity'
+include 'etxweb-persistence:repository'
+include 'etxweb-service'
+include 'etxweb-monitoring'
+include 'etxweb-exchange'
+include 'etxweb-vueApp'
+include 'code-coverage-report'
+include 'etxweb-utils'
+

@@ -1,0 +1,57 @@
+@startuml
+title
+Retrieve MessageSummary & download attachments (API calls in <font color=blue>blue</font>)
+<i><font size="12">The MessageSummary models the message (E2E encrypted) for a recipient</font></i>
+
+System retrieves from web
+end title
+
+activate Recipient
+activate Server
+
+autonumber "<b><font color=blue>0</font>"
+
+group#GreenYellow RSA key pair to exchange with server at instantiation
+    Recipient -> Recipient: constructor: <b>keyPair</b>
+end
+
+group#GreenYellow Retrieve message summary
+    autonumber resume
+    Recipient -[#blue]> Server: GET /message-api/v1/message-summary?senderEntityIdentifier&businessIdentifier\n Add header "CLIENT-PUBLIC-KEY=<<b>keyPair.publicKey</b>>"
+    autonumber stop
+    Recipient <-[#blue]- Server: 200 messageSummary: MessageSummary
+end
+
+group#GreenYellow Decrypt message text
+    Recipient -> Recipient: decrypt message.symmetricKey\nwith <b>keyPair.privateKey</b>
+    Recipient -> Recipient: decrypt message.text\nwith decrypted message.symmetricKey
+end
+
+loop "for each attachment"
+    group#GreenYellow Retrieve attachment
+        autonumber resume
+        Recipient -[#blue]> Server: GET /message-api/v1/attachments/<attachmentId>/file?entityId=<messageSummary.recipient.id>
+        autonumber stop
+        Recipient <-[#blue]- Server: 200 file: byte[] (content-type=application/octet-stream)
+    end
+
+    group#GreenYellow Decrypt attachment
+        Recipient -> Recipient: decrypt messageSummary.symmetricKey with Recipient's private key
+        Recipient -> Recipient: decrypt file: byte[] with decrypted symmetricKey
+    end
+
+    group#GreenYellow Verify content checksum
+        Recipient -> Recipient: compare attachment.checksum with computed checksum
+    end
+end
+
+group#GreenYellow Ack READ/FAILED
+    autonumber resume
+    Recipient -[#blue]> Server: POST /message-api/v1/message/status/<messageId>?status
+    autonumber stop
+    Recipient <-[#blue]- Server: 200
+end
+
+deactivate Recipient
+deactivate Server
+@enduml

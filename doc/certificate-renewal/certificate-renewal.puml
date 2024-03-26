@@ -1,0 +1,28 @@
+@startuml
+
+(*) --> "Scheduled task reads NEW_CERTIFICATE_READY database flag"
+    if "ACTIVE?" then
+        -->[No] Check Certificate expiration date
+         --> if "Expiration date in 2 months?" then
+                -->[Yes] Notify Support Office
+                --> Upload new certificate to server
+                note left: Done manually (TO BE DOCUMENTED)
+                --> "update server-certificate.properties file"
+                note left: copy 'server-certificate-*' to 'server-old-certificate-*'.\nThen edit 'server-certificate-*' properties with new certificate values
+                --> Deploy
+                --> "Set NEW_CERTIFICATE_READY flag to true"
+                --> (*)
+             else
+                -->[No] (*)
+            endif
+    else
+        -->[Yes] For each message,\n decrypt text with old certificate\n and encrypt with new one
+        --> Notify result
+        --> "Set NEW_CERTIFICATE_READY flag to false"
+        --> "Delete server-old-certificate.properties file and old certificate from Filesystem"
+        --> Create banner only for system admin active 2 months before certificate expiration date
+        --> (*)
+    endif
+
+
+@enduml

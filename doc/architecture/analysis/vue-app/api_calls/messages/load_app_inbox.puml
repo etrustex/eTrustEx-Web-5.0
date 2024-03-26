@@ -1,0 +1,43 @@
+@startuml
+title INBOX (load app) )API calls in <font color=blue>blue</font>
+
+autonumber "<b><font color=blue>0</font>"
+
+main -[#blue]> settings: fetchEnvironment()
+main -[#blue]> openId: fetchSettings()
+main -[#blue]> openId: loginOrRestore()
+main -[#blue]> rootLinks: fetchRootLinks()
+main -[#blue]> authentication: loadUserDetails()
+main -[#blue]> settings: fetchServerPublicKey()
+autonumber stop
+main -> messageBoxRoutes: INBOX
+messageBoxRoutes -> currentGroupHelper: (beforeEnter) \n changeGroupAndLoadSummaries()
+    currentGroupHelper -> currentGroup: changeGroup()
+        autonumber resume
+        currentGroup -[#blue]> groupApi: get(groupId)
+        autonumber stop
+        currentGroup -> currentGroup: setGroup()
+        currentGroup o-[#Magenta]// groupChangeTracker : @setGroupAdvice
+        autonumber resume
+        groupChangeTracker -[#blue]> businessConfigurations: fetchCurrentBusinessConfigurations
+        groupChangeTracker -[#blue]> alert: fetch()
+        groupChangeTracker -[#blue]> alertUserStatusStore: fetch()
+
+        currentGroup -[#blue]> exchangeRuleApi: getValidRecipients()
+        autonumber stop
+    currentGroupHelper -> summariesLoader: loadInbox()
+        summariesLoader -> inbox: fetchMessageSummaries()
+        autonumber resume
+        inbox -[#blue]> inboxApi: fetchMessageSummaries()
+        autonumber stop
+messageBoxRoutes -> InboxMessageList: mounted()
+    opt  if (!this.messageIsDisplayedInCurrentPage())
+        InboxMessageList -> summariesLoader: loadInbox()
+        summariesLoader -> inbox: fetchMessageSummaries()
+        autonumber resume
+        inbox -[#blue]> inboxApi: fetchMessageSummaries()
+        autonumber stop
+    end
+
+
+@enduml

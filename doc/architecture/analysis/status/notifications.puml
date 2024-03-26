@@ -1,0 +1,33 @@
+@startuml
+
+skinparam activity {
+  BackgroundColor<< Notification >> Cyan
+}
+
+partition Web {
+    (*) --> "Create Message"
+    note right: Create Message in Web DB
+    "Create Message" --> "Send Message"
+    note right: Message & MessageSummary status always match
+
+    if "Is Node Message?" then
+        -->[yes] "Node Sync processing"
+        --> if "Error?" then
+                note left: after retries
+                -->[yes] FAILED Status Notification \n(to Sender)<< Notification >>
+            endif
+    else
+        -->[no] SENT Status Notification \n(to Sender)<< Notification >>
+        --> New Message Notification \n(to Recipient)<< Notification >>
+        --> Message retrieved
+        --> READ Status Notification \n(to Sender)<< Notification >>
+    endif
+}
+
+partition Node {
+    "Async processing" --> if "Error?" then
+        -->[no] AVAILABLE Status Notification \n(to Sender)<< Notification >>
+    endif
+}
+
+@enduml

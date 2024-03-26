@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+title Attribute Based Access Control using Spring EL Policy Rules
+
+participant MessageSummaryController as Controller
+participant MethodSecurityInterceptor as "MethodSecurityInterceptor\n(Spring Security)"
+participant PermissionEvaluator
+participant PolicyEnforcementFactory
+participant MessageSummaryPolicyEnforcementImpl as PolicyEnforcement
+participant MessageSummaryService
+participant PolicyRuleContextBuilder
+participant PolicyChecker
+participant PoliciesProperties
+
+activate PolicyEnforcementFactory
+activate MethodSecurityInterceptor
+--> Controller: get()
+activate Controller
+Controller  o-// MethodSecurityInterceptor
+MethodSecurityInterceptor --> PermissionEvaluator: hasPermission(\n\tuserDetails,\n\tmessageId,\n\tMessageSummary.class,\n\tUserAction.RETRIEVE)
+activate PermissionEvaluator
+PermissionEvaluator --> PolicyEnforcementFactory: getPolicyEnforcement(domainType)
+PermissionEvaluator <-- PolicyEnforcementFactory: messageSummaryPolicyEnforcement
+PermissionEvaluator --> PolicyEnforcement: check(\n\tuserDetails,\n\ttargetDomainObject,\n\taction,\n\tenvironment)
+activate PolicyEnforcement
+PolicyEnforcement --> MessageSummaryService: findByMessageIdAndRecipientId(tmessageId, currentGroupId)
+activate MessageSummaryService
+PolicyEnforcement <-- MessageSummaryService: messageSummary
+deactivate MessageSummaryService
+PolicyEnforcement --> PolicyRuleContextBuilder: builder()\n\t.principal(userDetails)\n\t.action(RETRIEVE)\n\t.target(messageSummary).build()
+activate PolicyRuleContextBuilder
+PolicyEnforcement <-- PolicyRuleContextBuilder: policyRuleContext: PolicyRuleContext
+deactivate PolicyRuleContextBuilder
+PolicyEnforcement --> PolicyChecker: check(PolicyRuleContext context)
+activate PolicyChecker
+PolicyChecker --> PoliciesProperties: getPolicyRules() (yaml)
+activate PoliciesProperties
+PolicyChecker <-- PoliciesProperties: List<PolicyRule> allRules
+deactivate PoliciesProperties
+PolicyChecker --> PolicyChecker: validateContext(context)
+PolicyChecker --> PolicyChecker: filterRules(allRules, context)
+PolicyEnforcement <-- PolicyChecker: boolean anyRuleMatched
+deactivate PolicyChecker
+PermissionEvaluator <-- PolicyEnforcement: boolean anyRuleMatched
+deactivate PolicyEnforcement
+MethodSecurityInterceptor <-- PermissionEvaluator: boolean hasPermission
+deactivate PermissionEvaluator
+
+@enduml

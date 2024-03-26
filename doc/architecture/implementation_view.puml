@@ -1,0 +1,122 @@
+@startuml
+skinparam actorStyle awesome
+title Implementation View
+
+node "Server"{
+    node REST_API as "REST API Layer" {
+        [REST Controllers]
+        [HATEOAS]
+    }
+
+    node Security as "Security Layer" {
+        [Permission Evaluators]
+        [PreAuthenticatedProcessingFilter]
+    }
+
+    node Service as "Service Layer" {
+        [Services]
+        [Caching]
+        [Template Resolvers]
+    }
+
+    node Persistence as "Persistence Layer" {
+        [Repositories]
+        [Entities]
+    }
+
+    component Exchange as "Exchange Model" {
+    }
+
+    node "Cross Cutting" as aspects {
+        [Notification Aspect]
+        [Status Aspect]
+        [Monitoring Aspect]
+        [Deletion Aspect]
+    }
+
+'    This is just for algnment
+    [Notification Aspect] -[hidden]- [Status Aspect]
+    [Status Aspect] -[hidden]- [Deletion Aspect]
+    [Deletion Aspect]  -[hidden]- [Monitoring Aspect]
+
+    REST_API --> Security
+    Security --> Service
+    Security --> eulogin
+    REST_API --> Service
+    Service --> Persistence
+    Repositories ..> Entities
+    REST_API ..> Exchange
+    Services ..> Exchange
+}
+
+database "Database" {
+	folder "tables"{
+	}
+}
+
+storage Filesystem as "File storage" {
+}
+
+Services --> Filesystem
+Repositories ..> Database
+
+cloud "System Client" as system {
+}
+
+cloud "EU Login \n Open id \n (Authentication)" as eulogin {
+}
+
+node "UI Client \n (Vue application)" as uiclient {
+        node "API Interface Layer" as api {
+	}
+
+	node "Store Layer" as store {
+	}
+
+	node "Views Layer" as views {
+	}
+
+	node "Model Layer" as model {
+	}
+
+	node "Router Layer" as router {
+	}
+
+	router --> views
+	views --> store
+	views ..> model
+	store --> api
+	store ..> model
+	api ..> model
+}
+
+router --> [vue-router]
+views --> [vue.js]
+store --> [vuex \n (application state)]
+store --> [node-forge \n (encryption and signing)]
+
+api --> REST_API: HTTPS / REST
+
+
+REST_API --> [Spring REST]
+Security --> [Spring Security \n (Authorization)]
+Service --> [Spring]
+[Template Resolvers] --> [Thymeleaf]
+Persistence --> [Spring Data JPA]
+[aspectj] <-- aspects
+Exchange --> [Jackson \n (JSON parser / generator)]
+
+:User: --> uiclient
+
+
+system --> REST_API: HTTPS / REST
+
+
+'[Notification Aspect] --> Services
+'[Status Aspect] --> Services
+'[Status Aspect] --> [REST Controllers]
+'[Deletion Aspect] --> Services
+'[Deletion Aspect] -- Repositories
+'aspects --> [aspectj]
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+
+partition "User (eTrustEx Web)-System"
+skinparam activity {
+BackgroundColor<< Status >> royalBlue
+FontColor<< Status >> white
+FontStyle<< Status >> bold
+BackgroundColor<< DB >> grey
+BackgroundColor<< SystemAction >> DarkCyan
+BackgroundColor<< WebAction >> Ivory
+BackgroundColor<< Notification >> Lavender
+}
+skinparam defaultTextAlignment center
+
+(*) --> "Message sent from Web"
+--> "Create record in MESSAGE_USER_STATUS" << DB >>
+--> "Message available for
+system to retrieve"
+--> "SENT" << Status >>
+--> "System retrieves unread messages IDs" << SystemAction >>
+--> "System starts retrieving message" << SystemAction >>
+--> "System finishes retrieving
+message text and attachments" << SystemAction >>
+--> "DELIVERED [RETRIEVED]" << Status >>
+    if "Success" then
+    -->[YES] "System notifies
+    message received" << Notification >>
+    --> "Create record in
+    MESSAGE_SUMMARY_
+    USER_STATUS" <<db>>
+    --> "READ" << Status >>
+    else
+    -->[NO] "System notifies
+    Failed" << Notification >>
+    --> "FAILED" << Status >>
+
+@enduml

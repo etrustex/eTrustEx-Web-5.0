@@ -1,0 +1,16 @@
+@startuml
+
+title Assign role to user in Entity
+
+
+(*) --> "Search existing user
+         (users in current Business)" as UserSearch
+if "Granted Authority exists"
+    --> [Yes] "Display error
+           User already is <ROLE> in this Business"
+else
+    --> [No] "Create Granted Authority"
+    --> (*)
+endif
+
+@enduml

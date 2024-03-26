@@ -1,0 +1,66 @@
+<div>
+    <div class="text-center">
+        <h3 class="variant helper-vh-heading-spacing">Sender info</h3>
+    </div>
+    <p v-if="templateVariables.senderInfo_organisationName">Organisation name: <strong
+            class="text-break">{{templateVariables.senderInfo_organisationName}}</strong></p>
+    <p v-if="templateVariables.senderInfo_contactPerson">Contact person: <strong
+            class="text-break">{{templateVariables.senderInfo_contactPerson}}</strong></p>
+    <p v-if="templateVariables.senderInfo_position">Position: <strong
+            class="text-break">{{templateVariables.senderInfo_position}}</strong></p>
+    <p v-if="templateVariables.senderInfo_phone">Phone: <strong
+            class="text-break">{{templateVariables.senderInfo_phone}}</strong></p>
+    <p>Email: <strong class="text-break">{{templateVariables.senderInfo_email}}</strong></p>
+    <p v-if="templateVariables.senderInfo_address">Address: <strong
+            class="text-break">{{templateVariables.senderInfo_address}}</strong></p>
+    <p v-if="templateVariables.senderInfo_zip">Zip: <strong
+            class="text-break">{{templateVariables.senderInfo_zip}}</strong></p>
+    <p v-if="templateVariables.senderInfo_city">City: <strong
+            class="text-break">{{templateVariables.senderInfo_city}}</strong></p>
+    <p v-if="templateVariables.senderInfo_country">Country: <strong
+            class="text-break">{{templateVariables.senderInfo_country}}</strong></p>
+
+    <div class="text-center" v-if="templateVariables.onBehalfOf_organisationName || templateVariables.onBehalfOf_contactPerson || templateVariables.onBehalfOf_position ||
+    templateVariables.onBehalfOf_phone || templateVariables.onBehalfOf_email || templateVariables.onBehalfOf_address || templateVariables.onBehalfOf_zip || templateVariables.onBehalfOf_city ||
+    templateVariables.onBehalfOf_country">
+        <h3 class="variant helper-vh-heading-spacing">On behalf of</h3>
+    </div>
+    <p v-if="templateVariables.onBehalfOf_organisationName">Company Name: <strong
+            class="text-break">{{templateVariables.onBehalfOf_organisationName}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_contactPerson">Contact person: <strong
+            class="text-break">{{templateVariables.onBehalfOf_contactPerson}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_position">Position: <strong
+            class="text-break">{{templateVariables.onBehalfOf_position}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_phone">Phone: <strong
+            class="text-break">{{templateVariables.onBehalfOf_phone}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_email">Email: <strong
+            class="text-break">{{templateVariables.onBehalfOf_email}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_address">Address: <strong
+            class="text-break">{{templateVariables.onBehalfOf_address}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_zip">Zip: <strong
+            class="text-break">{{templateVariables.onBehalfOf_zip}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_city">City: <strong
+            class="text-break">{{templateVariables.onBehalfOf_city}}</strong></p>
+    <p v-if="templateVariables.onBehalfOf_country">Country: <strong
+            class="text-break">{{templateVariables.onBehalfOf_country}}</strong></p>
+
+    <div v-if="templateVariables.emailRecipients">
+        <div class="text-center">
+            <h3 class="variant helper-vh-heading-spacing">Email recipients</h3>
+        </div>
+        <p>Email: <strong class="text-break">{{templateVariables.emailRecipients}}</strong></p>
+    </div>
+
+    <div class="text-center">
+        <h3 class="variant helper-vh-heading-spacing">Message information</h3>
+    </div>
+    <p>Case number: <strong class="text-break">{{templateVariables.reference}}</strong></p>
+    <p>Instrument:
+        <strong v-if="templateVariables.instrument === 'InstrumentAT'" class="text-break">Antitrust</strong>
+        <strong v-else-if="templateVariables.instrument === 'InstrumentM'" class="text-break">Merger</strong>
+        <strong v-else-if="templateVariables.instrument === 'InstrumentSA'" class="text-break">State Aid</strong>
+        <strong v-else-if="templateVariables.instrument === 'InstrumentHP'" class="text-break">Horizontal</strong>
+    </p>
+
+</div>
+

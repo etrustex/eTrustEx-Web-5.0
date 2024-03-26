@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--/* Note the xmlns:* here are completely optional and only meant to avoid IDEs from complaining about tags/attributes they may not know */-->
+<!--/* xmlns:attachment processor is eu.europa.ec.etrustex.web.service.template.dialect.MessageDialect */-->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:message="">
+<head>
+    <title th:remove="all">Template for HTML GENERIC email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+<p>Dear user,</p>
+<br>
+
+<div>
+    <p>
+        <span th:text="${'The message ' + messageSubject +  ' has been sent by ' + senderName + ' from ' + senderGroupName + ' and is availbable to ' + recipientGroupName + '.'}"></span>
+    </p>
+    <br>
+    <p>
+        You can use the following link for viewing the full details of the message: <a message:permalink="inbox" th:text="here"></a>
+    </p>
+</div>
+
+<br>
+<p>
+    This message has been generated automatically by ETRUSTEX WEB. Please do not reply.
+</p>
+<br><br>
+<p>
+    Kind regards,<br/>
+    e-TrustEx Team
+</p>
+</body>
+</html>

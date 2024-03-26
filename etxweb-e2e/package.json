@@ -1,0 +1,21 @@
+{
+  "name": "etrustex-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "pretest:e2e": "rimraf ./tests_output",
+    "test:e2e": "nightwatch -e selenium.chrome --reporter html-reporter.js --suiteRetries 2 && nightwatch -e selenium.firefox --reporter html-reporter.js --suiteRetries 2",
+    "test:e2e": "nightwatch -e selenium.chrome --reporter html-reporter.js --suiteRetries 2 && nightwatch -e selenium.firefox --reporter html-reporter.js --suiteRetries 2"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.22.0",
+    "fs": "0.0.1-security",
+    "jszip": "3.2.2",
+    "handlebars": "^4.7.6",
+    "nightwatch": "^1.5.1",
+    "path": "^0.12.7",
+    "rimraf": "^3.0.2",
+    "selenium-server": "^3.141.59"
+  }
+}

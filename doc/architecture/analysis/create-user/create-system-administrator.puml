@@ -1,0 +1,36 @@
+@startuml
+title Add System Administrator
+
+(*) --> "Add new user
+        (Fill form)
+        Name
+        EcasId
+        Email
+        Status"
+
+if "User exists"
+    -> [No] "Create User"
+    --> "Create User Profile for Root" as CreateUserProfile
+else
+'    --> [Yes] ===CREATE_USER_PROFILE_CHECK===
+    if "User profile for ROOT exists"
+            --> [Yes] "Display error
+                     User already is System Administrator"
+        else
+            --> [No] CreateUserProfile
+'                    note left
+'                        If coming from Search
+'                        there is no email
+'                    end note
+            --> "Create Granted Authority"
+            --> (*)
+    endif
+endif
+
+
+
+'(*) --> "Search existing user
+'         (all users)" as UserSearch
+'--> ===CREATE_USER_PROFILE_CHECK===
+
+@enduml

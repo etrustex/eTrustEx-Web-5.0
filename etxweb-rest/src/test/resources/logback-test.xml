@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+
+    <appender name="InMemory" class="eu.europa.ec.etrustex.web.service.logging.MemoryAppender"/>
+
+    <appender name="NewCertificateUpdateFailuresFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/new-certificate-update-failures.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/archived/new-certificate-update-failures-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="org.hibernate.SQL" level="ERROR"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="ERROR"/>
+
+
+    <springProfile name="log-test">
+        <logger name="eu.europa.ec.etrustex.web.service.jobs.certificate" level='all' additivity="false">
+            <appender-ref ref="NewCertificateUpdateFailuresFile"/>
+        </logger>
+        <logger name="eu.europa.ec.etrustex" level="all">
+            <appender-ref ref="InMemory"/>
+        </logger>
+    </springProfile>
+</configuration>

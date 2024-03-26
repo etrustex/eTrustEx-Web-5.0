@@ -1,0 +1,24 @@
+@startuml
+title Create User in Business
+
+(*) --> "Add new user
+        (Fill form)
+        Name
+        EcasId
+        Email
+        Status"
+
+if "User exists"
+    -> [No] "Create User"
+    --> "Create User Profile for <Business>" as CreateUserProfile
+else
+    if "User profile for <Business> exists"
+            --> [Yes] "Display error
+                     User already exists in this Business"
+        else
+            --> [No] CreateUserProfile
+            --> (*)
+    endif
+endif
+
+@enduml

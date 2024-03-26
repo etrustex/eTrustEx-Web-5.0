@@ -1,0 +1,175 @@
+== MESSAGE CONTROLLER
+
+=== Create a message
+==== http-request
+==== request header
+include::{snippets}/should_create_a_message/request-headers.adoc[]
+//==== path parameters
+//include::{snippets}/should_create_a_message/path-parameters.adoc[]
+//==== request fields
+//include::{snippets}/should_create_a_message/request-fields.adoc[]
+==== request example
+include::{snippets}/should_create_a_message/http-request.adoc[]
+==== response example
+include::{snippets}/should_create_a_message/http-response.adoc[]
+==== response fields
+include::{snippets}/should_create_a_message/response-fields.adoc[]
+==== links
+include::{snippets}/should_create_a_message/links.adoc[]
+=== Send a message
+==== request header
+include::{snippets}/should_send_a_message/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_send_a_message/path-parameters.adoc[]
+==== request fields
+include::{snippets}/should_send_a_message/request-fields.adoc[]
+==== request example
+include::{snippets}/should_send_a_message/http-request.adoc[]
+==== response example
+include::{snippets}/should_send_a_message/http-response.adoc[]
+=== Consult the list of sent messages
+==== request header
+include::{snippets}/should_get_the_sent_messages/request-headers.adoc[]
+==== request parameters
+include::{snippets}/should_get_the_sent_messages/request-parameters.adoc[]
+==== request example
+include::{snippets}/should_get_the_sent_messages/http-request.adoc[]
+==== response example
+include::{snippets}/should_get_the_sent_messages/http-response.adoc[]
+==== response fields
+include::{snippets}/should_get_the_sent_messages/response-fields.adoc[]
+=== Retrieve the sent message details
+==== request header
+include::{snippets}/should_get_the_details_of_a_sent_message/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_get_the_details_of_a_sent_message/path-parameters.adoc[]
+==== request example
+include::{snippets}/should_get_the_details_of_a_sent_message/http-request.adoc[]
+==== response example
+include::{snippets}/should_get_the_details_of_a_sent_message/http-response.adoc[]
+==== response fields
+include::{snippets}/should_get_the_details_of_a_sent_message/response-fields.adoc[]
+== ATTACHMENT CONTROLLER
+=== Create an attachment
+==== request header
+include::{snippets}/should_create_an_attachment/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_create_an_attachment/path-parameters.adoc[]
+//==== request fields
+//include::{snippets}/should_create_an_attachment/request-fields.adoc[]
+==== request example
+include::{snippets}/should_create_an_attachment/http-request.adoc[]
+==== response example
+include::{snippets}/should_create_an_attachment/http-response.adoc[]
+==== response fields
+include::{snippets}/should_create_an_attachment/response-fields.adoc[]
+==== links
+include::{snippets}/should_create_an_attachment/links.adoc[]
+
+=== Retrieve an attachment
+==== request header
+include::{snippets}/should_get_an_attachment/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_get_an_attachment/path-parameters.adoc[]
+//==== request fields
+//include::{snippets}/should_get_an_attachment/request-fields.adoc[]
+==== request example
+include::{snippets}/should_get_an_attachment/http-request.adoc[]
+==== response example
+include::{snippets}/should_get_an_attachment/http-response.adoc[]
+==== response fields
+include::{snippets}/should_get_an_attachment/response-fields.adoc[]
+==== links
+include::{snippets}/should_get_an_attachment/links.adoc[]
+
+=== Upload an attachment
+==== request header
+include::{snippets}/should_upload_file/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_upload_file/path-parameters.adoc[]
+==== request example
+include::{snippets}/should_upload_file/http-request.adoc[]
+==== response example
+include::{snippets}/should_upload_file/http-response.adoc[]
+==== response fields
+include::{snippets}/should_upload_file/response-fields.adoc[]
+==== links
+include::{snippets}/should_upload_file/links.adoc[]
+
+=== Download an attachment
+==== request header
+include::{snippets}/should_get_file/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_get_file/path-parameters.adoc[]
+//==== request fields
+//include::{snippets}/should_get_file/request-fields.adoc[]
+==== request example
+include::{snippets}/should_get_file/http-request.adoc[]
+==== response example
+include::{snippets}/should_get_file/http-response.adoc[]
+
+
+== INBOX CONTROLLER
+=== List received messages
+==== request header
+include::{snippets}/should_get_the_inbox/request-headers.adoc[]
+==== request parameters
+include::{snippets}/should_get_the_inbox/request-parameters.adoc[]
+==== request example
+include::{snippets}/should_get_the_inbox/http-request.adoc[]
+==== response example
+include::{snippets}/should_get_the_inbox/http-response.adoc[]
+==== response fields
+include::{snippets}/should_get_the_inbox/response-fields.adoc[]
+==== links
+include::{snippets}/should_get_the_inbox/links.adoc[]
+
+=== Retrieve the received message details
+==== request header
+include::{snippets}/should_get_one_received_message_details/request-headers.adoc[]
+==== path parameters
+include::{snippets}/should_get_one_received_message_details/path-parameters.adoc[]
+==== request example
+include::{snippets}/should_get_one_received_message_details/http-request.adoc[]
+==== response example
+include::{snippets}/should_get_one_received_message_details/http-response.adoc[]
+==== response fields
+include::{snippets}/should_get_one_received_message_details/response-fields.adoc[]
+==== links
+include::{snippets}/should_get_one_received_message_details/links.adoc[]
+
+
+== EXCHANGE RULE CONTROLLER
+=== Check if sender and recipient are configure for message exchange
+==== request header
+include::{snippets}/is_configured_should_return_true/request-headers.adoc[]
+==== path parameters
+include::{snippets}/is_configured_should_return_true/path-parameters.adoc[]
+==== request example
+include::{snippets}/is_configured_should_return_true/http-request.adoc[]
+==== response example
+include::{snippets}/is_configured_should_return_true/http-response.adoc[]
+
+
+== USER CONTROLLER
+=== Retrieve the user details
+==== request header
+include::{snippets}/user_details/request-headers.adoc[]
+==== request example
+include::{snippets}/user_details/http-request.adoc[]
+==== response example
+include::{snippets}/user_details/http-response.adoc[]
+==== response fields
+include::{snippets}/user_details/response-fields.adoc[]
+
+
+//== TEMPLATE CONTROLLER
+//=== Retrieve custom templates
+//==== request header
+//include::{snippets}/template_summary/request-headers.adoc[]
+//==== request example
+//include::{snippets}/template_summary/http-request.adoc[]
+//==== response example
+//include::{snippets}/template_summary/http-response.adoc[]
+//==== response fields
+//include::{snippets}/template_summary/response-fields.adoc[]

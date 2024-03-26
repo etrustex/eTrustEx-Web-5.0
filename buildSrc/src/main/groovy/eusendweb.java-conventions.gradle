@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+}
+
+version = '1.0.2'
+group = 'eu.europa.ec.etrustex.web'
+
+repositories {
+    mavenCentral()
+}
+
+//testing {
+//    suites {
+//        test(JvmTestSuite) {
+//            useJUnitPlatform()
+//        }
+//    }
+//}
+
+// Do not generate reports for individual projects
+tasks.named("jacocoTestReport") {
+    enabled = false
+}

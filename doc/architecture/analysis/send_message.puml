@@ -1,0 +1,107 @@
+@startuml
+
+skinparam Shadowing false
+skinparam roundcorner 20
+skinparam maxmessagesize 150
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+skinparam SequenceBoxBackgroundColor AliceBlue
+skinparam ActorBorderColor SaddleBrown
+
+participant MessageController
+participant MessageService
+participant MessageSummaryService
+participant StatusAspect #Magenta
+participant NodeAspect #LimeGreen
+participant NodeDeliveryService
+participant NotificationAspect #DarkTurquoise
+participant NotificationService
+
+activate NotificationAspect
+activate NodeAspect
+activate StatusAspect
+activate MessageController
+
+--> MessageController : send
+MessageController --> MessageService: update Message
+activate MessageService
+
+MessageController <-- MessageService: Message
+deactivate MessageService
+
+MessageController --> MessageSummaryService: create MessageSummaries
+
+activate MessageSummaryService
+MessageController <-- MessageSummaryService: void
+deactivate MessageController
+
+MessageSummaryService o-[#Magenta]// StatusAspect: @AfterReturning setMessageSummaryStatusAvailable
+activate StatusAspect #Magenta
+
+MessageSummaryService o-[#LimeGreen]// NodeAspect : @AfterReturning saveMessageSummaries
+deactivate MessageSummaryService
+activate NodeAspect #LimeGreen
+
+loop "for each MessageSummary"
+    MessageSummaryService <[#Magenta]-- StatusAspect: save MessageSummary status AVAILABLE / PROCESSING (Node)
+    activate MessageSummaryService #Magenta
+    MessageSummaryService o-[#DarkTurquoise]// NotificationAspect: @Around save MessageSummary
+
+    activate MessageSummaryService #DarkTurquoise
+    activate NotificationAspect #DarkTurquoise
+    opt "If NOT Node Message"
+        NotificationAspect --[#DarkTurquoise]> NotificationService: notify of new MessageSummary
+        activate NotificationService #DarkTurquoise
+        NotificationService --[#DarkTurquoise]> : send email notification
+        deactivate NotificationService
+    end
+    MessageSummaryService <[#DarkTurquoise]-- NotificationAspect : proceed
+    deactivate NotificationAspect
+    deactivate MessageSummaryService
+
+    deactivate MessageSummaryService
+end
+deactivate StatusAspect
+
+activate NodeAspect #LimeGreen
+
+
+loop "for each MessageSummary"
+    NodeAspect --[#LimeGreen]>> NodeDeliveryService: send
+    deactivate NodeAspect
+
+    activate NodeDeliveryService #LimeGreen
+    NodeDeliveryService -[#LimeGreen]> : Send to Node
+    NodeDeliveryService <- : result from Node
+    activate NodeDeliveryService #Magenta
+    StatusAspect \\[#Magenta]-o NodeDeliveryService: @AfterReturning \n result
+    deactivate NodeDeliveryService
+    activate StatusAspect #Magenta
+    deactivate NodeDeliveryService
+
+    opt "If result is FALSE"
+        MessageSummaryService <[#Magenta]-- StatusAspect: save MessageSummary status FAILED
+        activate MessageSummaryService #Magenta
+
+
+        MessageSummaryService o-[#DarkTurquoise]// NotificationAspect: @Around save MessageSummary
+        activate MessageSummaryService #DarkTurquoise
+        activate NotificationAspect #DarkTurquoise
+        NotificationAspect --[#DarkTurquoise]> NotificationService: notify of MessageSummary status FAILED
+        activate NotificationService #DarkTurquoise
+        NotificationService --[#DarkTurquoise]> : send email notification
+        deactivate NotificationService
+        MessageSummaryService <[#DarkTurquoise]-- NotificationAspect : proceed
+        deactivate MessageSummaryService
+        deactivate NotificationAspect
+        deactivate MessageSummaryService
+    end
+    deactivate StatusAspect
+end
+
+deactivate StatusAspect
+deactivate NodeAspect
+deactivate NotificationAspect
+
+@enduml

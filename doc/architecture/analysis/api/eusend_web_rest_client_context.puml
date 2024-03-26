@@ -1,0 +1,55 @@
+@startuml context
+!include ../../C4-PlantUML/C4_Context.puml
+
+title Landscape diagram for etrustex Web for REST API Context
+
+Enterprise_Boundary(c0, "EC Network") {
+    Person(webUser, "Internal User", "Human accessing from inside EC Network.")
+
+AddBoundaryTag("v1", $bgColor="e3e316", $fontColor="blue", $borderColor="green", $shadowing="true", $shape = RoundedBoxShape())
+Boundary(restapi, "REST API Context", $tags="v1") {
+    System(etxweb, "eTrustEx Web Application", "Allows users and systems to exchange files securely.")
+
+    System(internalSystem, "Internal System", "System hosted within the EC Network.")
+}
+
+    System(etxnode, "eTrustEx Node", "Allows systems to exchange files securely.")
+
+    System(internalLegacySystem, "Internal Legacy System", "Uses Node to exchange files with eTrustEx Web.")
+    
+    (AP) as nodeAP
+'
+    (AP) as webAP
+
+}
+
+Person_Ext(externalWebUser, "External user", "Human accessing from outside EC Network.")
+
+System(externalLegacySystem, "External Legacy System", "Uses Node and eDelivery APs to exchange files with eTrustEx Web.")
+
+(AP) as extLegacySysAP
+
+System(externalSystem, "External System", "Uses eDelivery APs to exchange files with eTrustEx Web.")
+
+(AP) as extSysAP
+
+
+Rel(etxnode, nodeAP, "Uses")
+Rel(extLegacySysAP, nodeAP, "")
+Rel(externalLegacySystem, extLegacySysAP, "Uses")
+
+Rel(etxweb, webAP, "Uses")
+Rel(extSysAP, webAP, "")
+Rel(externalSystem, extSysAP, "Uses")
+
+Rel(externalWebUser, etxweb, "Exchanges files using Web UI")
+
+Rel(webUser, etxweb, "Exchanges files using Web UI")
+
+Rel(etxweb, etxnode, "Uses Node SOAP Webservices with legacy systems")
+
+Rel(internalLegacySystem, etxnode, "Uses Node SOAP Webservices to exchange files")
+
+Rel_L(internalSystem, etxweb, "Exchanges files using REST API")
+
+@enduml

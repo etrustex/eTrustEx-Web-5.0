@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--/* Note the xmlns:* here are completely optional and only meant to avoid IDEs from complaining about tags/attributes they may not know */-->
+<!--/* xmlns:attachment processor is eu.europa.ec.etrustex.web.service.template.dialect.AttachmentDialect */-->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:attachment="" xmlns:message="">
+<head>
+  <title th:remove="all">Template for HTML EGREFFE email</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+    }
+
+    td, th {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    span {
+      color: #4e555b;
+    }
+
+    .sensitive {
+      font-family: "Times New Roman";
+      font-size: 14px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+<div th:if="${!#strings.isEmpty(sensitive)}" class="sensitive">
+  <p>
+    <strong th:text="${sensitive}"></strong>
+  <p>
+</div>
+<strong>To download the documents, click </strong><a message:permalink="download" th:text="here"></a><br><br>
+<strong>Full title of the dossier</strong><br>
+<span th:text="${title}"></span>
+<br>
+<div th:if="${!#strings.isEmpty(subsidiarityCheck)}">
+  <br>
+  <strong th:text="${subsidiarityCheck}"></strong>
+  <br>
+</div>
+<br>
+<strong>Confidentiality level</strong><br>
+<span th:text="${confidentialityLevel}"></span>
+
+<p>
+  <strong>Content of the transmission of the <span th:text="${identifierWork}"></span></strong>
+
+<table>
+  <thead>
+  <tr bgcolor="gray">
+    <th>Type of document</th>
+    <th>Languages available</th>
+    <th>SWD/SEC/SGD reference</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="work : ${works}" th:if="not ${work.attachmentTypeMap.isEmpty()}">
+    <div th:with="documentType=${work.documentType},
+                                                          reference=${work.reference},
+                                                          attachmentTypeMap=${work.attachmentTypeMap}">
+
+      <td th:text="${documentType}"></td>
+      <td>
+        <th:block th:each="langAttachmentMap, iter : ${attachmentTypeMap}">
+          <strong th:text="${langAttachmentMap.key}"/>:</strong>
+          <th:block th:each="langAttachment : ${langAttachmentMap.value}">
+            <a attachment:clientRef="${langAttachment.value}" th:text="${langAttachment.key}"></a>
+          </th:block>
+          <span th:if="${iter.index < iter.size - 1}"><hr></span>
+        </th:block>
+      </td>
+      <td th:text="${reference}"></td>
+    </div>
+    <!--</div>-->
+  </tr>
+  </tbody>
+</table>
+</p>
+
+<p>
+  <strong>Comments</strong><br>
+  <span th:text="${comments}"></span>
+
+  <br/><br/>
+
+<p>
+  If you have any problems to access the documents, please contact <a href="mailto:SG-DECIDE-ETRUSTEX@ec.europa.eu">SG DECIDE ETRUSTEX</a>
+</p>
+
+<p>
+  Kind regards,
+</p>
+
+<p>
+  European Commission <br/>
+  Secretariat General
+</p>
+</body>
+</html>

@@ -1,0 +1,49 @@
+@startuml
+title  Admin (SYS_ADMIN) API calls in <font color=blue>blue</font>
+
+sysAdminRoot -> sysAdminRoot: beforeEnter
+    autonumber "<b><font color=blue>0</font>"
+    sysAdminRoot -[#blue]> rootLinks: fetchAdminLinks()
+    autonumber stop
+    sysAdminRoot -> currentGroup: systemAdmin()
+        autonumber resume
+        currentGroup -[#blue]> groupApi: getRoot()
+        autonumber stop
+        currentGroup -> currentGroup: setGroup()
+            currentGroup o-[#Magenta]// groupChangeTracker : @setGroupAdvice
+                groupChangeTracker -> businessConfigurations: fetchCurrentBusinessConfigurations
+                autonumber resume
+                businessConfigurations -[#blue]> groupConfigurationApi: getByGroup()
+                autonumber stop
+                groupChangeTracker -> alert: fetch()
+                    note left
+                        {retrieveInactive: false}
+                    end note
+                autonumber resume
+                alert -[#blue]> alertApi: get()
+                autonumber stop
+                groupChangeTracker -> alertUserStatus: fetch()
+                autonumber resume
+                alertUserStatus -[#blue]> alertUserStatusApi: get()
+                autonumber stop
+        currentGroup -> alertUtils: sysAdminAlerts()
+        autonumber resume
+        alertUtils -[#blue]> newServerCertificateApiApi: get()
+        autonumber stop
+sysAdminRoot -> Configurations
+Configurations -> AlertDetails: mounted()
+    AlertDetails -> AlertDetails: reset()
+        AlertDetails -> alert: fetch()
+        autonumber resume
+        note left
+            {retrieveInactive: true}
+        end note
+        alert -[#blue]> alertApi: get()
+
+    AlertDetails -[#blue]> groupApi: get()
+    autonumber stop
+
+Configurations -> UserGuides: mounted()
+    autonumber resume
+    UserGuides -[#blue]> userGuideApi: getByBusinessId()
+@enduml

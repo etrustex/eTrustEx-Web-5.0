@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--/* Note the xmlns:* here are completely optional and only meant to avoid IDEs from complaining about tags/attributes they may not know */-->
+<!--/* xmlns:attachment processor is eu.europa.ec.etrustex.web.service.template.dialect.MessageDialect */-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all">Template for HTML GENERIC email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+<p><span th:text="${'Dear ' + userName + ','}"></span></p>
+<br>
+
+<div>
+    <p>
+        <span th:text="${'You have been successfully configured in eTrustEx Web to the entity ' + groupIdentifier + '.'}"></span>
+    </p>
+    <br>
+    <p>
+        To access the application you can click on the link below: <br>
+        <a th:href="${applicationURL}" th:text="${applicationURL}"/>
+    </p>
+    <br>
+    <p>
+        The user guide is available from the help section on the right top corner of the application.
+        <br>
+        If you have any question or concern, feel free to contact us at <a th:href="${functionalMailbox}" th:text="${functionalMailbox}"/>.
+    </p>
+</div>
+
+<br>
+<p>
+    This message has been generated automatically by ETRUSTEX WEB. <br/>
+    Please do not reply.
+</p>
+<br><br>
+<p>
+    Kind regards,<br/>
+    eTrustEx Web Team
+</p>
+</body>
+</html>

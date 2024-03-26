@@ -1,0 +1,20 @@
+@startuml "etrustex-web"
+
+!include ../../C4-PlantUML/C4_Container.puml
+
+
+title eTrustEx Web REST API
+
+System_Boundary(c1, "Customer Client Application"){
+    Container(rest_client, "etrustex Web REST CLient", "Java jar", "Exposes interface and encapsulates authentication and interaction with etrustex REST API")
+}
+
+System(rest_api, "REST BACK-END", "Exposes REST API.\n Handles Access Rights, performs Business Logic and persists data and files")
+
+System_Ext(eulogin, "EU Login", "EULogin OAuth2 token service")
+
+
+Rel_R(rest_client, eulogin, "1. Retrieve EULogin POP Access Token")
+Rel(rest_client, rest_api, "2. REST API request", "HTTPS, REST, Json", "Authorization header: <EULogin POP Access Token>")
+
+@enduml

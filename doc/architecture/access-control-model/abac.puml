@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+title Attribute Based Access Control using Spring EL Policy Rules
+
+participant Controller
+participant MethodSecurityInterceptor as "MethodSecurityInterceptor\n(Spring Security)"
+participant PermissionEvaluator
+participant PolicyEnforcementFactory
+participant PolicyEnforcementImpl as PolicyEnforcement
+participant PolicyChecker
+participant PoliciesProperties
+
+activate PolicyEnforcementFactory
+activate MethodSecurityInterceptor
+activate Controller
+Controller  o-// MethodSecurityInterceptor
+MethodSecurityInterceptor --> PermissionEvaluator: hasPermission(\n\tSecurityUserDetails userDetails,\n\tObject targetDomainObject,\n\tUserAction action)
+activate PermissionEvaluator
+PermissionEvaluator --> PolicyEnforcementFactory: getPolicyEnforcement(domainType)
+note right
+    Returns PolicyEnforcement implementation
+    based on domain type, E.g.
+    - MessagePolicyEnforcement
+    - UserPolicyEnforcement
+    - BasicPolicyEnforcement (if target is a Type)
+end note
+PermissionEvaluator <-- PolicyEnforcementFactory: policyEnforcement
+PermissionEvaluator --> PolicyEnforcement: check(\n\tuserDetails,\n\ttargetDomainObject,\n\taction,\n\tenvironment)
+activate PolicyEnforcement
+PolicyEnforcement --> PolicyChecker: check(PolicyRuleContext ctx)
+activate PolicyChecker
+PolicyChecker --> PoliciesProperties: getPolicyRules() (yaml)
+activate PoliciesProperties
+PolicyChecker <-- PoliciesProperties: List<PolicyRule> allRules
+deactivate PoliciesProperties
+PolicyChecker --> PolicyChecker: validateContext(context)
+PolicyChecker --> PolicyChecker: filterRules(allRules, context)
+PolicyEnforcement <-- PolicyChecker: boolean anyRuleMatched
+deactivate PolicyChecker
+PermissionEvaluator <-- PolicyEnforcement: boolean anyRuleMatched
+deactivate PolicyEnforcement
+MethodSecurityInterceptor <-- PermissionEvaluator: boolean hasPermission
+deactivate PermissionEvaluator
+
+@enduml

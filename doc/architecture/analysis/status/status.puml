@@ -1,0 +1,55 @@
+@startuml
+
+skinparam activity {
+  BackgroundColor<< Status >> Magenta
+  BackgroundColor<< MessageUserStatus >> Yellow
+  BackgroundColor<< MessageSummaryUserStatus >> LightBlue
+}
+
+partition Web {
+    (*) --> "Create & Send Message"
+    --> "Create MessageUserStatus" << MessageUserStatus >>
+
+    if "Is Node Message?" then
+        -->[yes] "PROCESSING" << Status >>
+        --> "Node Sync processing"
+        --> if "Error?" then
+                note left: after retries
+                -->[yes] "FAILED" << Status >>
+            else
+                -->[no] "AVAILABLE" << Status >>
+            endif
+    else
+        -->[no] "SENT" << Status >>
+        --> "Retrieve Message"
+        --> "Create MessageSummaryUserStatus" << MessageSummaryUserStatus >>
+        --> "READ" << Status >>
+    endif
+}
+
+
+partition Node {
+    "Async processing" --> === S3 ===
+}
+
+partition Node {
+    "Message Retrieved (Or Read)" --> === S3 ===
+}
+
+partition Node {
+    "Node Application response" --> === S1 ===
+}
+
+partition Web {
+    === S1 === -->  "READ"
+}
+
+partition Web {
+    === S3 === -->  if "Error?" then
+        -->[yes] "FAILED" << Status >>
+    else
+        -->[no] "AVAILABLE" << Status >>
+    endif
+}
+
+@enduml

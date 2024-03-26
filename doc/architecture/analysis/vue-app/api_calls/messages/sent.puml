@@ -1,0 +1,18 @@
+@startuml
+title  SENT API calls in <font color=blue>blue</font>
+
+autonumber "<b><font color=blue>0</font>"
+
+autonumber stop
+messageBoxRoutes -> messageBoxRoutes: SENT
+messageBoxRoutes -> SentMessageList: mounted()
+SentMessageList -> SummariesLoader: load()
+SummariesLoader -> message: fetchMessages()
+autonumber resume
+message -[#blue]> messageApi: getMessages()
+autonumber stop
+message -> inbox: getNumberOfUnreadMessages()
+autonumber resume
+inbox -[#blue]> inboxApi: countUnread()
+autonumber stop
+@enduml

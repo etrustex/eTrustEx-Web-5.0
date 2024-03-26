@@ -1,0 +1,17 @@
+@startuml
+title New Message API calls in <font color=blue>blue</font>
+
+autonumber "<b><font color=blue>0</font>"
+
+autonumber stop
+messageFormRoute -> MessageForm: mounted()
+MessageForm -> MessageForm: reset()
+MessageForm -> newMessage: create()
+autonumber resume
+newMessage -[#blue]> messageApi: createMessage()
+autonumber stop
+MessageForm -> GroupSearch: mounted()
+autonumber resume
+GroupSearch -[#blue]> groupApi: search()
+autonumber stop
+@enduml

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--/* Note the xmlns:* here are completely optional and only meant to avoid IDEs from complaining about tags/attributes they may not know */-->
+<!--/* xmlns:attachment processor is eu.europa.ec.etrustex.web.service.template.dialect.MessageDialect */-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all">Template for HTML GENERIC email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+<p>Dear Official in Charge,</p>
+
+<div>
+    <p>
+        A request has been issued for a complete deletion of the business:
+    </p>
+
+    <p><strong><span th:text="${groupName}"></span></strong></p>
+
+    <p>
+        You can access the administration section from <a th:href="${applicationURL}">here</a> in order to confirm or cancel this deletion.
+    </p>
+
+    <p>
+        If the deletion is confirmed, all data related to the business will be removed after 12 days.
+    </p>
+</div>
+
+<p>
+    This message has been generated automatically by <strong>eTrustEx Web.</strong> <br/>
+    Please do not reply.
+</p>
+
+<p>
+    Kind regards,<br/>
+    eTrustEx Web Team
+</p>
+</body>
+</html>

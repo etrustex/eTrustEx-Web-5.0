@@ -1,0 +1,274 @@
+import eu.europa.ec.etrustex.web.gradle.YamlToJsonTask
+import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "cz.habarta.typescript-generator:typescript-generator-gradle-plugin:${typescriptGeneratorVersion}"
+    }
+}
+
+plugins {
+    id 'etrustexweb.java-conventions'
+    id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
+    id 'war'
+}
+
+apply plugin: 'cz.habarta.typescript-generator'
+
+
+processResources {
+    filesMatching('application.properties') {
+        expand(project.properties)
+    }
+
+    filesMatching(["**/application.yml"]) {
+        filter(ReplaceTokens, tokens: ['target.server.context.root': targetServerContextRoot])
+        filter(ReplaceTokens, tokens: ['context.path': contextRoot])
+    }
+}
+
+
+configurations {
+    asciidoctorExtensions
+}
+
+//tasks.register('integrationTest', Test) {
+//    description = 'Runs integration tests.'
+//    group = 'verification'
+//
+//    shouldRunAfter test
+//}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+   // implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation "org.apache.poi:poi-ooxml:${apachePoiVersion}"
+    implementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "com.google.code.findbugs:jsr305:${jsr305Version}" // fixes warning: unknown enum constant javax.annotation.meta.When.MAYBE in build
+    implementation "org.springdoc:springdoc-openapi-ui:${springDocOpenApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-hateoas:${springDocOpenApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-security:${springDocOpenApiVersion}"
+
+    // AccessTokenFilter https://citnet.tech.ec.europa.eu/CITnet/stash/projects/REUSE/repos/eulogin-token-filter/browse
+    implementation "eu.europa.ec.digit.apigw:access-token-filter:${accessTokenFilterVersion}"
+    implementation "com.nimbusds:oauth2-oidc-sdk:${oauth2OidcSdkVersion}"
+    implementation "com.nimbusds:nimbus-jose-jwt:${nimbusJoseJwtVersion}"
+
+
+    implementation project(':etxweb-service')
+    implementation project(':etxweb-exchange')
+    implementation project(':etxweb-common')
+
+    compileOnly "eu.europa.ec.digit.iam.eulogin.client:eulogin-weblogic-12-authprovider:${ecasClientVersion}"
+    compileOnly "javax.servlet:javax.servlet-api:${servletApiVersion}"
+
+    testFixturesImplementation project(':etxweb-common')
+    testFixturesImplementation(testFixtures(project(':etxweb-persistence:entity')))
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-security'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-json'
+
+    testImplementation(testFixtures(project(':etxweb-utils')))
+    testImplementation(testFixtures(project(':etxweb-service')))
+    testImplementation(testFixtures(project(':etxweb-persistence:entity')))
+    testImplementation(testFixtures(project(':etxweb-persistence:repository')))
+    testImplementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+
+    testImplementation project(':etxweb-common')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.boot:spring-boot-starter-mail'
+    testImplementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation "org.springframework.batch:spring-batch-test:${springBatchTestVersion}"
+//    testImplementation group: 'org.springframework.batch', name: 'spring-batch-test', version: '4.3.6'
+    testImplementation "com.google.code.gson:gson:${gsonVersion}"
+    testImplementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    testImplementation "com.h2database:h2:${h2driverVersion}"
+    testImplementation "eu.europa.ec.digit.iam.eulogin.client:eulogin-weblogic-12-authprovider:${ecasClientVersion}"
+    testImplementation "commons-io:commons-io:${commonsIOVersion}"
+    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-activemq"
+    testImplementation "org.apache.activemq:activemq-broker"
+    testImplementation "org.apache.pdfbox:pdfbox:${pdfBoxVersion}"
+    testImplementation "org.reflections:reflections:${reflectionsVersion}"
+    testImplementation "com.nimbusds:nimbus-jose-jwt:${nimbusJoseJwtVersion}"
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+
+    asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
+}
+
+
+asciidoctor {
+    configurations 'asciidoctorExtensions'
+
+    def snippetsDir = new File(project.buildDir, "generated-snippets")
+    if (!snippetsDir.exists()) {
+        snippetsDir.mkdirs()
+    }
+
+    inputs.dir("$buildDir/generated-snippets")
+
+    attributes 'source-highlighter': 'prettify',
+            toc: 'left',
+            icons: 'font',
+            setanchors: true,
+            idprefix: '',
+            idseparator: '-',
+            docinfo1: true
+
+    doLast {
+        copy {
+            from "${outputDir}/html5"
+            into "src/main/resources/public/rest-docs"
+        }
+    }
+}
+
+
+generateTypeScript {
+    jsonLibrary = 'jackson2'
+    classes = [
+            'eu.europa.ec.etrustex.web.common.features.FeaturesEnum',
+            'eu.europa.ec.etrustex.web.util.crypto.AesValues'
+    ]
+    classPatterns = [
+            'eu.europa.ec.etrustex.web.persistence.entity.**',
+            'eu.europa.ec.etrustex.web.exchange.model.**',
+            'eu.europa.ec.etrustex.web.util.exchange.model.**',
+            'eu.europa.ec.etrustex.web.exchange.util.SysAdminRels',
+            'eu.europa.ec.etrustex.web.common.security.RoleName',
+            'eu.europa.ec.etrustex.web.common.exchange.**',
+            'eu.europa.ec.etrustex.web.common.DbStringListsSeparators',
+            'eu.europa.ec.etrustex.web.service.pagination.**',
+            'eu.europa.ec.etrustex.web.service.validation.model.**'
+    ]
+    excludeClasses = [
+            'eu.europa.ec.etrustex.web.persistence.entity.security.GrantedAuthorityId',
+            'eu.europa.ec.etrustex.web.persistence.entity.security.PolicyId',
+            'eu.europa.ec.etrustex.web.persistence.entity.MessageSummaryId',
+            'java.io.Serializable',
+            'org.springframework.security.core.GrantedAuthority',
+            'eu.europa.ec.etrustex.web.exchange.model.UserExportItem',
+            'eu.europa.ec.etrustex.web.persistence.entity.Credentials'
+    ]
+    excludeClassPatterns = [
+            '**.**Builder',
+            '**.**BuilderImpl',
+            '**.**ViewFilter',
+            'eu.europa.ec.etrustex.web.persistence.entity.redirect.*'
+    ]
+    excludePropertyAnnotations = [
+            'com.fasterxml.jackson.annotation.JsonIgnore'
+    ]
+    customTypeMappings = [
+            'org.springframework.hateoas.LinkRelation:Rels'
+    ]
+
+    outputFile = '../etxweb-vueApp/src/model/entities.ts'
+    outputKind = 'module'
+    outputFileType = 'implementationFile'
+    mapClasses = 'asClasses'
+    mapEnum = 'asEnum'
+    nonConstEnums = true
+    stringQuotes = 'singleQuotes'
+//    nonConstEnums = true
+//    optionalProperties = 'useLibraryDefinition'
+}
+
+bootWar {
+    // remove the existing empty file. It is there just for tests compilation
+    sourceSets.main.resources.exclude 'etrustex.web.properties'
+
+//    if (targetEnv.startsWith("prod")) {
+//        dependsOn(asciidoctor)
+//    }
+
+    if (targetEnv.startsWith("local") || targetEnv.startsWith("docker")) {
+        // For local development add ../environment/local/etrustex.web.properties to the classpath
+        // In other environments etrustex.web.properties is expected to be in the app server classpath
+        from('../environment/' + targetEnv + '/') {
+            include '*.*'
+            into('WEB-INF/classes')
+        }
+    } else {
+        // Feature toggles
+        from('../environment/' + targetEnv + '/') {
+            include 'application.yml'
+            into('WEB-INF/classes')
+        }
+    }
+
+    filesMatching("**/weblogic.xml") {
+        filter(ReplaceTokens, tokens: ['target.server.context.root': targetServerContextRoot])
+    }
+
+    filesMatching("**/web.xml") {
+        filter(ReplaceTokens, tokens: ['artifact.name': webResourceName])
+    }
+
+    filesMatching(["**/unsupportedBrowser.html"]) {
+        filter(ReplaceTokens, tokens: ['context.root': contextRoot])
+    }
+
+    from('../etxweb-vueApp/dist/') {
+        include '**/*.*'
+        into('WEB-INF/classes/public')
+    }
+
+    from('../etxweb-persistence/repository/src/main/resources/db/changelog/files/templates') {
+        include '**/*.*'
+        exclude 'README.md'
+        into('WEB-INF/classes/custom-templates')
+    }
+
+    def excludedJars = ['**/tomcat-*.jar']
+    if (targetEnv == 'dev') {
+        excludedJars.add('*ehcache*.jar')
+    }
+
+    rootSpec.exclude(excludedJars)
+
+    archiveFileName = webResourceName+'.war'
+}
+
+
+tasks.register('yamlToJson', YamlToJsonTask) {
+    inputYmlFile = "$buildDir/resources/main/application.yml"
+    outputJsonFile = "$rootDir/etxweb-vueApp/src/application.json"
+}
+
+tasks.register('buildAll') {
+    doLast {
+        println "buildAll finished"
+    }
+}
+
+//asciidoctor.mustRunAfter(test)
+yamlToJson.dependsOn(processResources)
+generateTypeScript.dependsOn yamlToJson
+rootProject.buildVueApp.dependsOn generateTypeScript
+bootWar.dependsOn(rootProject.buildVueApp)
+buildAll.dependsOn(bootWar)
+
+//if (targetEnv.startsWith('prod')) {
+//    rootProject.subprojects
+//            .findAll { project -> project.plugins.withType(JavaPlugin) }
+//            .collect { project -> project.test }
+//            .forEach { testTask -> bootWar.dependsOn(testTask) }
+//}

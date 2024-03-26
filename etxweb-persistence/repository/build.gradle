@@ -1,0 +1,66 @@
+buildscript {
+    dependencies {
+        classpath "org.liquibase:liquibase-gradle-plugin:${liquibasePluginVersion}"
+    }
+}
+
+plugins {
+    id 'etrustexweb.java-conventions'
+    id 'java-library'
+}
+
+apply plugin: 'org.liquibase.gradle'
+
+liquibase {
+    activities {
+        main {
+            changeLogFile "${dbChangelogDDLdir}/db.changelog." + new Date().format('yyyyMMddHHmmss') + ".yaml"
+            url localDBurl
+            username localDBusername
+            password localDBpassword
+        }
+        diffMain {
+            changeLogFile "${dbChangelogDDLdir}/db.changelog." + new Date().format('yyyyMMddHHmmss') + ".yaml"
+            url localDBurl
+            username localDBusername
+            password localDBpassword
+            diffTypes 'data'
+        }
+    }
+//    runList = 'main, diffMain'
+    runList = 'main'
+//    runList = 'diffMain'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    api project(':etxweb-persistence:entity')
+    implementation project(':etxweb-exchange')
+    implementation project(':etxweb-common')
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    testFixturesImplementation(testFixtures(project(':etxweb-persistence:entity')))
+    testImplementation(testFixtures(project(':etxweb-persistence:entity')))
+    testImplementation "javax.validation:validation-api:$validationApiVersion"
+    testFixturesImplementation project(':etxweb-common')
+    testFixturesImplementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-json'
+    testImplementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testImplementation "com.h2database:h2:${h2driverVersion}"
+    testImplementation project(':etxweb-service')
+
+    implementation 'org.liquibase:liquibase-core'
+
+    liquibaseRuntime "org.liquibase:liquibase-core:${liquibaseCoreVersion}"
+    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate${liquibaseHibernateVersion}"
+    liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}

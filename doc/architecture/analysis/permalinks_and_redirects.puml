@@ -1,0 +1,25 @@
+@startuml
+
+skinparam Shadowing false
+
+participant Client
+participant "RedirectController" as RC
+participant "RedirectService" as RS
+participant "etrustexBackend" as EB
+
+Client -> RC: get(goto/{redirectId})
+note left
+goto/{redirectId} is the
+format ot a permalink
+end note
+
+RC -> RS: getTargetUrl(redirectId)
+RS -> RC: redirectUrl
+RC -> Client: redirectTo(redirectUrl)
+Client -> EB: get(redirectUrl)
+EB -> Client: serve the VueApp with a specific hash
+
+'!include ../../plantuml-styles/ae-copyright-footer.txt
+
+@enduml
+

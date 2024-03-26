@@ -1,0 +1,67 @@
+version: '3.1'
+
+services:
+  oracle:
+    image: etrustex/oracle:19.3.0-ee
+    container_name: etx-all-oracle
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    environment:
+      ORACLE_SID: ORCLCDB
+      ORACLE_PDB: ETX
+      ORACLE_PWD: Oradoc_db1
+      DB_MEMORY: 2GB
+    volumes:
+      - ./oracle/container-scripts/setup:/opt/oracle/scripts/setup
+      - ./oracle/oradata:/opt/oracle/oradata
+
+  weblogic:
+    image: etx-all-weblogic
+    build:
+      context: .
+      dockerfile: Dockerfile_wl
+    container_name: etx-all-weblogic
+    ports:
+      - "7001:7001"
+      - "7002:7002"
+      - "7003:7003"
+      - "9002:9002"
+      - "5005:8453"
+    environment:
+      debugFlag: "true"
+      DEBUG_PORT: "8453"
+      PRODUCTION_MODE: "false"
+    depends_on:
+      - oracle
+      - redis
+    volumes:
+      - ./weblogic/base_domain:/u01/oracle/user_projects/domains/base_domain
+      - ./weblogic/file-repositoy:/u01/oracle/ec/local/appserver/u100/data
+    hostname: localhost
+
+  # https://hub.docker.com/r/eeacms/postfix
+  # https://www.michelebologna.net/2019/send-an-email-from-a-docker-container/
+  postfix:
+    image: eeacms/postfix
+    container_name: etx-all-mail
+    env_file:
+      - ./local.env
+    environment:
+      MTP_HOST: "localhost"
+      MTP_RELAY: "smtp.gmail.com"
+      MTP_PORT: "465"
+      MTP_USER:
+      MTP_PASS:
+  redis:
+    image: redis:latest
+    container_name: etx-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - ./redis:/data
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379

@@ -1,0 +1,22 @@
+@startuml
+title  Admin (GROUP_ADMIN in single entity) API calls in <font color=blue>blue</font>
+
+autonumber "<b><font color=blue>0</font>"
+
+autonumber stop
+singleEntityAdminRoot -> adminBusinessEntitiesRoutes: redirect /entities/${entityId}/users
+adminBusinessEntitiesRoutes -> adminBusinessEntitiesRoutes: beforeEnter()
+adminBusinessEntitiesRoutes -> group: fetchCurrentEntity()
+    autonumber resume
+    group -[#blue]> groupApi: get(groupId)
+    autonumber stop
+adminBusinessEntitiesRoutes -> EntityActions: (Entity import) mounted()
+    autonumber resume
+    EntityActions -[#blue]> serProfileApi: getNotificationEmails()
+    autonumber stop
+adminBusinessEntitiesRoutes -> UserList: (Users import) mounted()
+    UserList -> user: fetchUsers()
+    autonumber resume
+    user -[#blue]> userProfileApi: getListItems()
+
+@enduml

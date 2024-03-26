@@ -1,0 +1,27 @@
+@startuml
+title
+Retrieve MessageSummaries (API calls in <font color=blue>blue</font>)
+<i><font size="12">The MessageSummary models the message (E2E encrypted) for a recipient</font></i>
+
+System retrieves from web
+end title
+
+activate Recipient
+activate Server
+
+autonumber "<b><font color=blue>0</font>"
+
+group#GreenYellow Generate RSA key pair to exchange with server
+    Recipient -> Recipient: generate Key Pair: <b>keyPair</b>
+end
+
+group#GreenYellow Retrieve unread message summaries
+    autonumber resume
+    Recipient -[#blue]> Server: GET /message-api/v1/messages/message-summaries?senderEntityIdentifier&businessIdentifier\n Add header "CLIENT-PUBLIC-KEY=<<b>keyPair.publicKey</b>>"
+    autonumber stop
+    Recipient <-[#blue]- Server: 200 messageSummaries: List<MessageSummary>
+end
+
+deactivate Recipient
+deactivate Server
+@enduml

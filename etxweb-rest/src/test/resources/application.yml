@@ -1,0 +1,92 @@
+build:
+  info: ${bamboo_build-info}
+  timestamp: ${bamboo_build-timestamp}
+
+openidui:
+  prod:
+    oidClientSettings:
+      authority: https://your.auth.service.host/cas/oauth2/authorize
+      metadataUrl: https://your.auth.service.host/cas/oauth2/.well-known/openid-configuration
+      client_id: jAipai8L4J7lDEsqzNZG0PLGefDa2hX1jlJUKuNzTYlur3YtV5k3R76Ll5crTVP9qYw4JfZzuqmntRaCg8Mj0dW-jpJZscgsw0Ks9A5djjOrNa
+      redirect_uri: https://your.auth.service.host/etrustex/web
+      post_logout_redirect_uri: https://your.auth.service.host/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    openIdUiDevelopmentSettings:
+      delegateLogin: false
+      allowDevelopmentLogin: false
+    euLoginAccessTokenUrl: https://your.auth.service.host/cas/oauth2/token
+    tokenRequestPortNumber: 1043
+  acc:
+    oidClientSettings:
+      authority: https://your.auth.service.host/cas/oauth2/authorize
+      metadataUrl: https://your.auth.service.host/cas/oauth2/.well-known/openid-configuration
+      client_id: aJm7NA1oiWzirHIzWJ7Dj8zpaL4BltDyUF2kFeosuSQOIKajRPfUgoyzYl4ZlzXAEqumcV77xsJ3hTXlDzb4UxkG-jpJZscgsw0Ks9A5djjOrNa
+      redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      post_logout_redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    openIdUiDevelopmentSettings:
+      delegateLogin: false
+      # should be set to true on the server delegated for developers authentication
+      allowDevelopmentLogin: true
+    euLoginAccessTokenUrl: https://your.auth.service.host/cas/oauth2/token
+    tokenRequestPortNumber: 1143
+  test:
+    oidClientSettings:
+      authority: https://your.auth.service.host/cas/oauth2/authorize
+      metadataUrl: https://your.auth.service.host/cas/oauth2/.well-known/openid-configuration
+      client_id: cVraSSQEhXxf1IoQYFBCpxCgScoHTzm7UwrzoA4OB5pngALzgBRJnqdlG1VyAjzhOxiY6Zr85rzu3hYD5ZB761i-jpJZscgsw0KWFkgyCQdyBa
+      redirect_uri: https://webgate.test.ec.europa.eu/etrustex/web
+      post_logout_redirect_uri: https://webgate.test.ec.europa.eu/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    openIdUiDevelopmentSettings:
+      delegateLogin: false
+      allowDevelopmentLogin: true
+    euLoginAccessTokenUrl: https://your.auth.service.host/cas/oauth2/token
+    tokenRequestPortNumber: 1143
+
+  dev:
+    oidClientSettings:
+      authority: https://your.auth.service.host/cas/oauth2/authorize
+      metadataUrl: https://your.auth.service.host/cas/oauth2/.well-known/openid-configuration
+      client_id: aJm7NA1oiWzirHIzWJ7Dj8zpaL4BltDyUF2kFeosuSQOIKajRPfUgoyzYl4ZlzXAEqumcV77xsJ3hTXlDzb4UxkG-jpJZscgsw0Ks9A5djjOrNa
+      redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      post_logout_redirect_uri: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      response_type: id_token
+      scope: openid email profile
+      filterProtocolClaims: true
+      loadUserInfo: true
+    openIdUiDevelopmentSettings:
+      delegateLogin: true
+      allowDevelopmentLogin: false
+      # should be set to the delegate for login in the development environemnts (acc)
+      loginDelegateUrl: https://webgate.acceptance.ec.europa.eu/etrustex/web
+      developmentBackendPort: 7003
+      npmProxyPort: 4200
+    euLoginAccessTokenUrl: https://your.auth.service.host/cas/oauth2/token
+    tokenRequestPortNumber: 7002
+
+features:
+  features:
+    -
+      id: ETRUSTEX_0000
+      description: sample Test task toggle feature enabled
+      dev: true
+      test: true
+      acc: true
+      prod: true
+    -
+      id: ETRUSTEX_0001
+      description: sample Test task toggle feature disabled
+      dev: false
+      test: false
+      acc: false
+      prod: false

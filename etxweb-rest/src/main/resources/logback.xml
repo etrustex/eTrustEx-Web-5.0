@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--<include resource="org/springframework/boot/logging/logback/base.xml"/>-->
+    <property resource="etrustex.web.properties"/>
+
+    <appender name="ConsoleOn" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%highlight(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ConsoleOff" class="ch.qos.logback.core.helpers.NOPAppender">
+    </appender>
+
+    <appender name="EtrustexWebFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/etrustex-web.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/etrustex-web-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each file should be at most 100MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- 45 days max of History -->
+            <maxHistory>45</maxHistory>
+            <!-- 5GB of History -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="EULoginFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/ecas-client.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/ecas-client-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each file should be at most 100MB, keep 45 days worth of history, but at most 5GB -->
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="NewCertificateUpdateFailuresFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/new-certificate-update-failures.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/new-certificate-update-failures-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each file should be at most 100MB, keep 45 days worth of history, but at most 5GB -->
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="UserActionsWebFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/user-actions-web.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/user-actions-web-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="UserActionsAdminFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/user-actions-admin.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/user-actions-admin-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="RequestHeaderFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/forwarded-header.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/forwarded-header-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="MethodPerformanceFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/method-performance.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/method-performance-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>45</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </root>
+
+    <logger name="eu.europa.ec.etrustex.web" level='${logback.logLevel}' additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.cec.digit.ecas" level='${logback.ecasLogLevel}' additivity="false">
+        <appender-ref ref="EULoginFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.service.jobs.certificate" level='warn' additivity="false">
+        <appender-ref ref="NewCertificateUpdateFailuresFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="org.springframework.security" level="warn" additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="org.springframework.data" level="warn" additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="org.springframework.web.servlet.mvc.method.annotation" level='warn' additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="org.hibernate" level="warn" additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.security" level='${logback.securityLogLevel}' additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+
+    <logger name="eu.europa.ec.etrustex.web.service.security" level='${logback.securityLogLevel}' additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <!--org.springframework.aop.interceptor.PerformanceMonitorInterceptor level below trace will disable logging of execution times -->
+    <logger name="org.springframework.org.springframework.aop.interceptor.PerformanceMonitorInterceptor" level='${logback.performanceMonitorLogLevel}' additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.rest.logging.LoggingInterceptor$WebLog" level="info" additivity="false">
+        <appender-ref ref="UserActionsWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.rest.logging.LoggingInterceptor$AdminLog" level="info" additivity="false">
+        <appender-ref ref="UserActionsAdminFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.filter.LoggingForwardedHeaderFilter" level="info" additivity="false">
+        <appender-ref ref="RequestHeaderFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.digit.apigw" level='${logback.apigwLogLevel}' additivity="false">
+        <appender-ref ref="EtrustexWebFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.aspects.ServicePerformanceAspect" level="info" additivity="false">
+        <appender-ref ref="MethodPerformanceFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+
+    <logger name="eu.europa.ec.etrustex.web.aspects.RepositoryPerformanceAspect" level="info" additivity="false">
+        <appender-ref ref="MethodPerformanceFile"/>
+        <appender-ref ref="${logback.console}"/>
+    </logger>
+</configuration>

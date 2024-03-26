@@ -1,0 +1,30 @@
+@startuml
+
+partition "User (eTrustEx Web)-System"
+skinparam activity {
+BackgroundColor<< Status >> royalBlue
+FontColor<< Status >> white
+FontStyle<< Status >> bold
+BackgroundColor<< DB >> grey
+BackgroundColor<< SystemAction >> MediumTurquoise
+BackgroundColor<< WebAction >> DarkSalmon
+BackgroundColor<< Notification >> Plum
+}
+
+(*) --> "Message sent from Web"
+--> "Message available for
+system to retrieve" << DB >>
+--> "SENT" << Status >>
+--> "Retrieves unread messages IDs" << SystemAction >>
+--> "Starts retrieving message" << SystemAction >>
+--> "Retrieves message text" << SystemAction >>
+--> "Retrieves attachments" << SystemAction >>
+--> "DELIVERED [RETRIEVED]" << Status >>
+    if "Success" then
+    -->[YES] "Sends confirmation back" << SystemAction >>
+    --> "READ" << Status >>
+    else
+    -->[NO] "Sends Failed" << SystemAction >>
+    --> "FAILED" << Status >>
+
+@enduml
