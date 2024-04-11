@@ -6,7 +6,7 @@
     </button>
     <ul class="dropdown-menu">
       <li>
-        <a class="dropdown-item" :href="`mailto:${supportEmail}`">Support Contact</a>
+        <a class="dropdown-item" href="mailto:placeholder@example.com">Support Contact</a>
       </li>
       <li v-for="guide in userGuides" :id="guide.id" :key="guide.id">
         <a class="dropdown-item" v-on:click="getUserGuideFile(guide)">{{ guide.label }}</a>

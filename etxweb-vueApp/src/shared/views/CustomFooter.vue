@@ -3,6 +3,7 @@
     <div class="container-fluid" @dragover.prevent @drop.stop.prevent>
       <div class="col">
         <ul>
+          <li>Contact support: <strong>placeholder@example.com</strong></li>
           <li>European Commission - eTrustEx Web {{ version }} - {{ timeStamp }}</li>
         </ul>
       </div>
